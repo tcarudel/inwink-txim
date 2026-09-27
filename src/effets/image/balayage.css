@@ -1,0 +1,11 @@
+/* Image : un aplat couvre le cadre puis se retire ; le texte attend la fin */
+.txim-i-balayage{--txim-dt:4}
+.txim-i-balayage .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:§A;transform:scaleX(0);--dur:1.4s;animation-name:txim-balayage}
+.txim-i-balayage .picture{--dur:1.4s;animation-name:txim-mi}
+@keyframes txim-balayage{
+  0%{transform:scaleX(0);transform-origin:calc(50% - 50% * §D) 50%}
+  50%{transform:scaleX(1);transform-origin:calc(50% - 50% * §D) 50%}
+  50.01%{transform:scaleX(1);transform-origin:calc(50% + 50% * §D) 50%}
+  100%{transform:scaleX(0);transform-origin:calc(50% + 50% * §D) 50%}}
+@keyframes txim-mi{0%,50%{opacity:0}50.01%,100%{opacity:1}}

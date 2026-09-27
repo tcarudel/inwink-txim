@@ -1,0 +1,6 @@
+/* Texte : le texte monte, puis un trait de surligneur passe sous le titre */
+.txim-t-surligneur :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+.txim-t-surligneur .bloctitle .fieldtext{--i:calc(3 + var(--txim-dt,0));
+  background:linear-gradient(color-mix(in srgb,§A 25%,transparent),color-mix(in srgb,§A 25%,transparent)) 0 88%/100% 42% no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;animation-name:txim-surligne}
+@keyframes txim-surligne{from{background-size:0% 42%}}

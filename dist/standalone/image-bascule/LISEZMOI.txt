@@ -1,0 +1,5 @@
+Effet image « Bascule 3D (bloc entier) » : classe txim-i-bascule sur le bloc (#ct-…) ou sur .content-wrapper.
+Le bloc arrive incliné et se redresse.
+
+CSS : txim-image-bascule.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

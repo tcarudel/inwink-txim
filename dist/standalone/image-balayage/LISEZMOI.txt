@@ -1,0 +1,5 @@
+Effet image « Balayage » : classe txim-i-balayage sur le bloc (#ct-…) ou sur .content-wrapper.
+Un aplat couvre le cadre puis se retire ; le texte attend.
+
+CSS : txim-image-balayage.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

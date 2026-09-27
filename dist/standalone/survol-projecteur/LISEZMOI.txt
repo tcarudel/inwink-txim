@@ -1,0 +1,5 @@
+Effet survol « Projecteur (JS) » : classe txim-h-projecteur sur le bloc (#ct-…) ou sur .content-wrapper.
+Un halo suit le pointeur et révèle la couleur.
+
+CSS : txim-survol-projecteur.css (noyau inclus).
+JS : txim.js OBLIGATOIRE pour cet effet.

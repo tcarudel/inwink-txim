@@ -1,0 +1,5 @@
+Effet texte « Encre » : classe txim-t-encre sur le bloc (#ct-…) ou sur .content-wrapper.
+Titre et description se remplissent ligne par ligne.
+
+CSS : txim-texte-encre.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

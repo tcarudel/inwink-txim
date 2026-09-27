@@ -1,0 +1,735 @@
+{
+	"id": "__ID__",
+	"type": "teaser",
+	"customCSS": "/* OPTIONS */\n/* Background image opacity */\n##contentid .content-wrapper.image-light .picture-wrapper:before {\n  background-color: rgba(255, 255, 255, 0.3);\n}\n\n##contentid .content-wrapper.image-dark .picture-wrapper:before {\n  background-color: rgba(0, 0, 0, 0.3);\n}\n\n/* Image position to the left */\n##contentid .content-wrapper.image-left {\n  flex-flow: row wrap;\n}\n\n##contentid .content-wrapper.image-left .text-wrapper:not(.card) {\n  padding-left: 40px;\n}\n\n/* Image position to the right */\n##contentid .content-wrapper.image-right {\n  flex-flow: row-reverse wrap;\n}\n\n##contentid .content-wrapper.image-right .text-wrapper {\n  padding-right: 40px;\n}\n\n/* Text position to the center */\n##contentid .content-wrapper.text-center .text-wrapper {\n  align-items: center;\n  text-align: center;\n}\n\n##contentid .content-wrapper.text-center .itembloccontentactions {\n  justify-content: center;\n}\n\n/* Text position to the right */\n##contentid .content-wrapper.text-right .text-wrapper {\n  align-items: flex-end;\n  text-align: right;\n}\n\n##contentid .content-wrapper.text-right .itembloccontentactions {\n  justify-content: flex-end;\n}\n\n/* Half text proportion */\n##contentid .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {\n  width: 50%;\n}\n\n/* Large text proportion */\n##contentid .content-wrapper.large .text-wrapper {\n  width: 65%;\n}\n\n##contentid .content-wrapper.large .picture-wrapper {\n  width: 35%;\n}\n\n/* Small text proportion */\n##contentid .content-wrapper.small .text-wrapper {\n  width: 35%;\n}\n\n##contentid .content-wrapper.small .picture-wrapper {\n  width: 65%;\n}\n\n/* LAYOUT */\n##contentid .content-wrapper {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n##contentid .content-wrapper .text-wrapper > * {\n  margin: 0;\n}\n\n/* Image */\n##contentid .content-wrapper .picture-wrapper {\n  display: flex;\n  position: relative;\n}\n\n##contentid .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  z-index: 1;\n}\n\n##contentid .content-wrapper .picture {\n  object-fit: contain;\n  width: 100%;\n}\n\n/* Content */\n##contentid .content-wrapper .text-wrapper {\n  display: flex;\n  flex-flow: column nowrap;\n  justify-content: center;\n  gap: 2rem;\n}\n\n/* Buttons */\n##contentid .content-wrapper .itembloccontentactions {\n  display: flex;\n  flex-flow: row wrap;\n  gap: 1rem;\n  width: 100%;\n}\n\n##contentid .content-wrapper .itembloccontentactions a[role=button] {\n  margin: 0;\n  min-width: 160px;\n  text-align: center;\n}\n\n/* CARD LAYOUT */\n##contentid .content-wrapper.is-card {\n  justify-content: space-between;\n  align-items: stretch;\n}\n\n/* Card half text proportion */\n##contentid .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {\n  width: 48%;\n}\n\n/* Card large text proportion */\n##contentid .content-wrapper.is-card.large .text-wrapper {\n  width: 63%;\n}\n\n##contentid .content-wrapper.is-card.large .picture-wrapper {\n  width: 33%;\n}\n\n/* Card small text proportion */\n##contentid .content-wrapper.is-card.small .text-wrapper {\n  width: 33%;\n}\n\n##contentid .content-wrapper.is-card.small .picture-wrapper {\n  width: 63%;\n}\n\n/* Card content */\n##contentid .content-wrapper.is-card .text-wrapper {\n  padding: 2.5rem;\n}\n\n##contentid .content-wrapper.is-card .picture {\n  object-fit: cover;\n}\n\n/* Card buttons */\n##contentid .content-wrapper .itembloccontentactions a[role=button] {\n  font-size: 1rem;\n}\n\n/* Responsive */\n@media (max-width: 767px) {\n  ##contentid .content-wrapper {\n    gap: 1.5rem;\n  }\n\n  ##contentid .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {\n    width: 100%;\n  }\n\n  ##contentid .content-wrapper:not(.is-card) .text-wrapper {\n    display: contents;\n  }\n\n  ##contentid .content-wrapper.is-card .text-wrapper {\n    padding: 1.5rem;\n  }\n\n  ##contentid .content-wrapper:not(.is-card) .text-wrapper .bloc-title {\n    order: -1;\n    text-align: center;\n    width: 100%;\n  }\n}\n\n##contentid .content-wrapper .picture-wrapper {\n  container-type: inline-size;\n}",
+	"editor": {
+		"header": {
+			"disable": true
+		}
+	},
+	"properties": {
+		"hideActions": true,
+		"noHeader": true,
+		"template": {
+			"type": "div",
+			"className": "content-wrapper",
+			"conditionalClasses": {
+				"image-left": [
+					{
+						"name": "image-position",
+						"op": "eq",
+						"val": "left"
+					}
+				],
+				"image-right": [
+					{
+						"name": "image-position",
+						"op": "eq",
+						"val": "right"
+					}
+				],
+				"text-left": [
+					{
+						"name": "text-position",
+						"op": "eq",
+						"val": "left"
+					}
+				],
+				"text-center": [
+					{
+						"name": "text-position",
+						"op": "eq",
+						"val": "center"
+					}
+				],
+				"text-right": [
+					{
+						"name": "text-position",
+						"op": "eq",
+						"val": "right"
+					}
+				],
+				"half": [
+					{
+						"name": "text-proportion",
+						"op": "eq",
+						"val": "half"
+					}
+				],
+				"large": [
+					{
+						"name": "text-proportion",
+						"op": "eq",
+						"val": "large"
+					}
+				],
+				"small": [
+					{
+						"name": "text-proportion",
+						"op": "eq",
+						"val": "small"
+					}
+				],
+				"image-dark": [
+					{
+						"name": "image-opacity",
+						"op": "eq",
+						"val": "dark"
+					}
+				],
+				"image-light": [
+					{
+						"name": "image-opacity",
+						"op": "eq",
+						"val": "light"
+					}
+				],
+				"is-card": [
+					{
+						"name": "card",
+						"op": "eq",
+						"val": true
+					}
+				]
+			},
+			"blocs": [
+				{
+					"type": "div",
+					"className": "picture-wrapper",
+					"blocs": [
+						{
+							"type": "inwinkimage",
+							"className": "picture",
+							"showIf": [
+								{
+									"not": {
+										"or": [
+											{
+												"name": "picture",
+												"op": "isempty"
+											},
+											{
+												"name": "picture",
+												"op": "eq",
+												"val": ""
+											},
+											{
+												"name": "picture",
+												"op": "eq",
+												"val": null
+											}
+										]
+									}
+								}
+							],
+							"properties": {
+								"lazy": true,
+								"target": "picture",
+								"alt": [
+									"title"
+								],
+								"sizes": "(max-width: 767px) 100cqw, min(100cqw, 640px)",
+								"availableSizes": [
+									400,
+									700,
+									1200
+								],
+								"defaultSize": 700
+							},
+							"bindings": [
+								{
+									"fields": [
+										{
+											"name": "alttextseo"
+										}
+									],
+									"target": "alt"
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "div",
+					"className": "text-wrapper",
+					"conditionalClasses": {
+						"card": [
+							{
+								"name": "card",
+								"op": "eq",
+								"val": true
+							}
+						]
+					},
+					"blocs": [
+						{
+							"type": "h2",
+							"className": "bloc-title",
+							"showIf": [
+								{
+									"not": {
+										"and": [
+											{
+												"or": [
+													{
+														"name": "pretitle",
+														"op": "isempty"
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": null
+													}
+												]
+											},
+											{
+												"or": [
+													{
+														"name": "title",
+														"op": "isempty"
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": null
+													}
+												]
+											}
+										]
+									}
+								}
+							],
+							"blocs": [
+								{
+									"type": "span",
+									"className": "pretitle bloc-accent",
+									"showIf": [
+										{
+											"not": {
+												"or": [
+													{
+														"name": "pretitle",
+														"op": "isempty"
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": null
+													}
+												]
+											}
+										}
+									],
+									"fields": [
+										{
+											"name": "pretitle"
+										}
+									]
+								},
+								{
+									"type": "span",
+									"className": "bloctitle",
+									"showIf": [
+										{
+											"not": {
+												"or": [
+													{
+														"name": "title",
+														"op": "isempty"
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": null
+													}
+												]
+											}
+										}
+									],
+									"fields": [
+										{
+											"name": "title"
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "div",
+							"className": "description",
+							"showIf": [
+								{
+									"not": {
+										"or": [
+											{
+												"name": "description",
+												"op": "isempty"
+											},
+											{
+												"name": "description",
+												"op": "eq",
+												"val": ""
+											},
+											{
+												"name": "description",
+												"op": "eq",
+												"val": null
+											}
+										]
+									}
+								}
+							],
+							"fields": [
+								{
+									"name": "description"
+								}
+							]
+						},
+						{
+							"type": "bloccontentactions"
+						}
+					]
+				}
+			]
+		},
+		"itemDefinition": {
+			"languages": [
+				"fr",
+				"en"
+			],
+			"fields": [
+				{
+					"key": "picture",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "picture",
+					"labels": {
+						"fr": "Image",
+						"en": "Picture",
+						"es": "Imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "alttextseo",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "text",
+					"labels": {
+						"fr": "Texte alternatif (SEO)",
+						"en": "Alternative text (SEO)",
+						"es": "Texto alternativo (SEO)"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "pretitle",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": true,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "text",
+					"labels": {
+						"fr": "Pré-titre",
+						"en": "Pretitle",
+						"es": "Pretítulo"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "title",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": true,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "text",
+					"labels": {
+						"fr": "Titre",
+						"en": "Title",
+						"es": "Título"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "description",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": true,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "multilinetext",
+					"labels": {
+						"fr": "Description",
+						"en": "Description",
+						"es": "Descripción"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "card",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "bool",
+					"labels": {
+						"fr": "Affichage de la carte",
+						"en": "Card display",
+						"es": "Visualización de tarjeta"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "image-opacity",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Opacité de l'image",
+						"en": "Image opacity",
+						"es": "Opacidad de la imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "light",
+							"labels": {
+								"fr": "Clair",
+								"en": "Light",
+								"es": "Claro"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "dark",
+							"labels": {
+								"fr": "Sombre",
+								"en": "Dark",
+								"es": "Oscuro"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "normal",
+							"labels": {
+								"fr": "Aucune",
+								"en": "None",
+								"es": "Ninguna"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "image-position",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Position de l'image",
+						"en": "Image position",
+						"es": "Posición de la imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "right",
+							"labels": {
+								"fr": "Droite",
+								"en": "Right",
+								"es": "Derecha"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "left",
+							"labels": {
+								"fr": "Gauche",
+								"en": "Left",
+								"es": "Izquierda"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "text-position",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Position du texte",
+						"en": "Text position",
+						"es": "Posición del texto"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "right",
+							"labels": {
+								"fr": "Droite",
+								"en": "Right",
+								"es": "Derecha"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "left",
+							"labels": {
+								"fr": "Gauche",
+								"en": "Left",
+								"es": "Izquierda"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "center",
+							"labels": {
+								"fr": "Centre",
+								"en": "Center",
+								"es": "Centro"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "text-proportion",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Proportion du texte",
+						"en": "Text proportion",
+						"es": "Proporción del texto"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "half",
+							"labels": {
+								"fr": "Moitié",
+								"en": "Half",
+								"es": "Mitad"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "large",
+							"labels": {
+								"fr": "Large",
+								"en": "Large",
+								"es": "Grande"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "small",
+							"labels": {
+								"fr": "Petit",
+								"en": "Small",
+								"es": "Pequeño"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				}
+			],
+			"scopes": {
+				"picture": [],
+				"alttextseo": [],
+				"pretitle": [],
+				"title": [],
+				"description": [],
+				"card": [],
+				"image-opacity": [],
+				"image-position": [],
+				"text-position": [],
+				"text-proportion": []
+			}
+		},
+		"data": {
+			"picture": "https://cdn-assets.inwink.com/backoffice-public/assets/pictures/00-inwink/Background_Blue.jpg",
+			"alttextseo": "",
+			"pretitle": {
+				"fr": "Pré-titre",
+				"en": "Pretitle",
+				"es": "Pretítulo"
+			},
+			"title": {
+				"fr": "Titre du bloc",
+				"en": "Block title",
+				"es": "Título del bloque"
+			},
+			"description": {
+				"fr": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ut egestas lorem. Proin elementum dui ac egestas facilisis. Quisque posuere finibus mi vel dapibus. Sed dapibus, elit a tincidunt ullamcorper, tortor metus eleifend ipsum, vel dignissim nulla justo at lectus.",
+				"en": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ut egestas lorem. Proin elementum dui ac egestas facilisis. Quisque posuere finibus mi vel dapibus. Sed dapibus, elit a tincidunt ullamcorper, tortor metus eleifend ipsum, vel dignissim nulla justo at lectus.",
+				"es": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ut egestas lorem. Proin elementum dui ac egestas facilisis. Quisque posuere finibus mi vel dapibus. Sed dapibus, elit a tincidunt ullamcorper, tortor metus eleifend ipsum, vel dignissim nulla justo at lectus."
+			},
+			"card": false,
+			"image-opacity": "normal",
+			"image-position": "left",
+			"text-position": "left",
+			"text-proportion": "half"
+		},
+		"supportAssetFormat": true,
+		"assetsMigrationAi": 1
+	},
+	"layout": null,
+	"header": null,
+	"actions": [
+		{
+			"id": "__ID_ACTION__",
+			"link": {
+				"url": ""
+			},
+			"label": {
+				"fr": "Cliquez ici",
+				"en": "Click here",
+				"es": "Haz clic aquí"
+			},
+			"icon": {
+				"className": ""
+			},
+			"description": {}
+		}
+	]
+}

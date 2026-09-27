@@ -1,0 +1,10 @@
+/* Survol : l'image se rapproche, le titre se souligne, le bouton se décale */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-zoom .picture{transition:scale 1s cubic-bezier(.2,.7,.2,1)}
+  .txim-h-zoom .bloctitle{text-decoration-line:underline;text-decoration-thickness:3px;text-underline-offset:.18em;
+    text-decoration-color:transparent;transition:text-decoration-color .4s}
+  .txim-h-zoom .itembloccontentactions>:first-child{transition:translate .4s}
+  §HV(txim-h-zoom):is(:hover,:focus-within) .picture{scale:1.15}
+  §HV(txim-h-zoom):is(:hover,:focus-within) .bloctitle{text-decoration-color:§A}
+  §HV(txim-h-zoom):is(:hover,:focus-within) .itembloccontentactions>:first-child{translate:10px 0}
+}

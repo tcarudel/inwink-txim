@@ -1,0 +1,10 @@
+/* Image : parallaxe (toujours liée au défilement, quel que soit le mode) */
+.txim-i-parallaxe .picture{--txim-s:calc(1 + .35 * §F)}
+@supports (animation-timeline: view()){
+  .txim-i-parallaxe .picture{animation-name:txim-parallaxe!important;animation-timeline:--txim!important;
+    animation-duration:auto!important;animation-delay:0s!important;animation-play-state:running!important;
+    animation-timing-function:linear!important;animation-fill-mode:both!important;animation-range:cover 0% cover 100%!important}
+}
+@keyframes txim-parallaxe{
+  from{transform:translateY(calc((var(--txim-s) - 1) / 2 * 100%)) scale(var(--txim-s))}
+  to{transform:translateY(calc((1 - var(--txim-s)) / 2 * 100%)) scale(var(--txim-s))}}

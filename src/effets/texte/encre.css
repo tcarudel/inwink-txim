@@ -1,0 +1,7 @@
+/* Texte : titre et description se remplissent ligne par ligne (couleur du thème conservée) */
+.txim-t-encre :is(.bloctitle,.description) .fieldtext{
+  -webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
+  background-image:linear-gradient(currentColor,currentColor),linear-gradient(color-mix(in srgb,currentColor 22%,transparent),color-mix(in srgb,currentColor 22%,transparent));
+  background-repeat:no-repeat;background-size:100% 100%,100% 100%;--dur:1.6s;animation-name:txim-encre}
+.txim-t-encre :is(.pretitle,.itembloccontentactions>*){animation-name:txim-apparait}
+@keyframes txim-encre{from{background-size:0% 100%,100% 100%}}

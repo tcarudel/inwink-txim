@@ -1,0 +1,5 @@
+Effet image « Diagonale » : classe txim-i-diagonale sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image se dévoile en diagonale depuis le coin extérieur.
+
+CSS : txim-image-diagonale.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

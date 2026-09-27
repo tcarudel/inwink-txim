@@ -1,0 +1,5 @@
+Effet texte « Focale » : classe txim-t-focale sur le bloc (#ct-…) ou sur .content-wrapper.
+Le titre arrive agrandi et flou puis se pose net.
+
+CSS : txim-texte-focale.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

@@ -1,0 +1,3 @@
+/* Image : arrive de son bord extérieur en se redressant */
+.txim-i-convergence .picture-wrapper{animation-name:txim-convergence}
+@keyframes txim-convergence{from{opacity:0;transform:translateX(calc(-45% * §F * §D)) rotate(calc(-8deg * §F * §D))}}

@@ -1,0 +1,5 @@
+/* Texte : <description en une ligne> */
+/* Ne pas cibler .text-wrapper (display: contents sur mobile). Ordre d'apparition via --i (noyau). */
+.txim-t-<cle> :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-<cle>}
+/* Effet ligne par ligne : viser .bloctitle .fieldtext / .description .fieldtext (restent en ligne). */
+@keyframes txim-<cle>{from{opacity:0;transform:translateY(calc(40px * §F))}}

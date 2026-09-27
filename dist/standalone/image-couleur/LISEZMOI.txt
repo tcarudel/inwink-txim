@@ -1,0 +1,5 @@
+Effet image « Noir et blanc vers couleur » : classe txim-i-couleur sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image passe du noir et blanc à la couleur.
+
+CSS : txim-image-couleur.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

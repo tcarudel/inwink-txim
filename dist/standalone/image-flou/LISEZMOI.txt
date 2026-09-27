@@ -1,0 +1,5 @@
+Effet image « Mise au point (bloc entier) » : classe txim-i-flou sur le bloc (#ct-…) ou sur .content-wrapper.
+Le bloc passe du flou au net.
+
+CSS : txim-image-flou.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

@@ -1,0 +1,9 @@
+/* Survol : le texte glisse par-dessus l'image, qui se rapproche */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-superposition .text-wrapper{position:relative;z-index:3;
+    transition:translate .6s cubic-bezier(.2,.7,.2,1),box-shadow .6s,background-color .3s}
+  .txim-h-superposition .picture{transition:scale 1s cubic-bezier(.2,.7,.2,1)}
+  §HV(txim-h-superposition):is(:hover,:focus-within) .text-wrapper{translate:calc(-30% * §D) 0;
+    background-color:var(--txim-fond,#fff);box-shadow:0 24px 60px rgba(0,0,0,.18)}
+  §HV(txim-h-superposition):is(:hover,:focus-within) .picture{scale:1.1}
+}

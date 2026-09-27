@@ -1,0 +1,2 @@
+/* Texte : fondu simple, élément par élément */
+.txim-t-fondu :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-apparait}

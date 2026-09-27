@@ -1,0 +1,5 @@
+Effet image « Ouverture circulaire » : classe txim-i-cercle sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image s'ouvre en cercle depuis son centre.
+
+CSS : txim-image-cercle.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

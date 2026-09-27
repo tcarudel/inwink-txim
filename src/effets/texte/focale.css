@@ -1,0 +1,4 @@
+/* Texte : le titre arrive agrandi et flou puis se pose net ; le reste monte */
+.txim-t-focale .bloctitle{transform-origin:var(--txim-origine,0%) 50%;--dur:1.3s;animation-name:txim-focale}
+.txim-t-focale :is(.pretitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+@keyframes txim-focale{from{opacity:0;filter:blur(calc(10px * §F));transform:scale(calc(1 + .35 * §F))}}

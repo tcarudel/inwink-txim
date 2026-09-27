@@ -1,0 +1,5 @@
+Effet survol « Inclinaison (JS) » : classe txim-h-inclinaison sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image s'incline vers le pointeur.
+
+CSS : txim-survol-inclinaison.css (noyau inclus).
+JS : txim.js OBLIGATOIRE pour cet effet.

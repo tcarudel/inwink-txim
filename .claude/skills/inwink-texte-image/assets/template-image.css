@@ -1,0 +1,8 @@
+/* Image : <description en une ligne> */
+/* Remplacer <cle>. Ne déclarer que animation-name (et au besoin --dur, --txim-dt).
+   Keyframes : uniquement l'état de départ ; §F = amplitude, §D = sens (1 image à gauche, -1 à droite), §A = accent. */
+.txim-i-<cle> .picture-wrapper{animation-name:txim-<cle>}
+/* .txim-i-<cle> .picture{animation-name:txim-dezoom}               image dans son cadre (keyframe du noyau) */
+/* .txim-i-<cle>{--txim-dt:3}                                        le texte attend la fin de l'image      */
+/* §SELF(txim-i-<cle>){animation-name:txim-<cle>}                     variante « bloc entier »              */
+@keyframes txim-<cle>{from{opacity:0;transform:translateX(calc(-60px * §F * §D))}}

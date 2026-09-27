@@ -1,0 +1,8 @@
+/* Survol : image teintée d'accent ; la teinte glisse et révèle la couleur */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-duotone .picture{filter:grayscale(1) contrast(1.2);transition:filter .7s,scale 1s}
+  .txim-h-duotone .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:§A;mix-blend-mode:screen;clip-path:inset(0);transition:clip-path .7s cubic-bezier(.7,0,.2,1)}
+  §HV(txim-h-duotone):is(:hover,:focus-within) .picture{filter:none;scale:1.06}
+  §HV(txim-h-duotone):is(:hover,:focus-within) .picture-wrapper::after{clip-path:inset(0 0 0 100%)}
+}

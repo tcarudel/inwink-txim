@@ -1,0 +1,10 @@
+/* Survol : image assombrie, un halo suit le pointeur et révèle la couleur (JS requis) */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  §PTR(txim-h-projecteur) .picture{filter:grayscale(1) brightness(.45);transition:filter .4s}
+  §PTR(txim-h-projecteur) .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:var(--txim-src) center/cover no-repeat;opacity:0;transition:opacity .35s;
+    -webkit-mask-image:radial-gradient(circle 140px at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),#000 55%,transparent 100%);
+            mask-image:radial-gradient(circle 140px at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),#000 55%,transparent 100%)}
+  §PTR(txim-h-projecteur):hover .picture-wrapper::after{opacity:1}
+  §PTR(txim-h-projecteur):focus-within .picture{filter:none}
+}

@@ -1,0 +1,2 @@
+/* Texte : les éléments montent l'un après l'autre */
+.txim-t-monte :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}

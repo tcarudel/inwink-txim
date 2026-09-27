@@ -1,0 +1,4 @@
+/* Image : arrive en grand par-dessus le texte puis se pose ; le texte suit */
+.txim-i-atterrissage{--txim-dt:3}
+.txim-i-atterrissage .picture-wrapper{z-index:2;--dur:1.2s;animation-name:txim-atterrissage}
+@keyframes txim-atterrissage{from{transform:translate(calc(55% * §F * §D),calc(-12% * §F)) scale(calc(1 + .45 * §F))}}

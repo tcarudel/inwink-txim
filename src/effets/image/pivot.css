@@ -1,0 +1,3 @@
+/* Image : arrive en tournant et en grossissant */
+.txim-i-pivot .picture-wrapper{animation-name:txim-pivot}
+@keyframes txim-pivot{from{opacity:0;transform:rotate(calc(-16deg * §F * §D)) scale(calc(1 - .3 * §F))}}

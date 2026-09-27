@@ -1,0 +1,5 @@
+Effet image « Convergence » : classe txim-i-convergence sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image arrive de son bord extérieur en se redressant.
+
+CSS : txim-image-convergence.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

@@ -1,0 +1,5 @@
+Effet image « Dépliage » : classe txim-i-depliage sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image se déplie en 3D depuis son bord.
+
+CSS : txim-image-depliage.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

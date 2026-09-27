@@ -1,0 +1,6 @@
+/* Image : dévoilement en diagonale depuis le coin extérieur */
+.txim-i-diagonale .picture-wrapper{animation-name:txim-diagonale}
+.txim-i-diagonale .picture{animation-name:txim-dezoom}
+@keyframes txim-diagonale{
+  from{clip-path:polygon(calc(50% - 50% * §D) 0,calc(50% - 50% * §D) 0,calc(50% - 50% * §D) 0)}
+  to{clip-path:polygon(calc(50% - 50% * §D) 0,calc(50% + 150% * §D) 0,calc(50% - 50% * §D) 200%)}}

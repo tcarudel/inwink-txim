@@ -1,0 +1,12 @@
+/* Survol : l'image s'incline vers le pointeur, avec un reflet (JS requis : --txim-px / --txim-py) */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  §PTR(txim-h-inclinaison){perspective:900px}
+  §PTR(txim-h-inclinaison) .picture-wrapper{
+    rotate:calc(.5 - clamp(0, var(--txim-py,.5), 1)) calc(clamp(0, var(--txim-px,.5), 1) - .5) 0
+           calc(hypot(clamp(0, var(--txim-px,.5), 1) - .5, clamp(0, var(--txim-py,.5), 1) - .5) * 44deg);
+    transition:rotate .5s cubic-bezier(.2,.7,.2,1)}
+  §PTR(txim-h-inclinaison):hover .picture-wrapper{transition-duration:.12s}
+  §PTR(txim-h-inclinaison) .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .4s;
+    background:radial-gradient(circle at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),rgba(255,255,255,.5),transparent 55%)}
+  §PTR(txim-h-inclinaison):hover .picture-wrapper::after{opacity:1}
+}

@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>txim v0.1.0 : démo sur le DOM inwink</title>
+<link rel="stylesheet" href="../txim.css">
+<style>
+/* ---- Thème simulant inwink (hors bibliothèque) ---- */
+:root{--inwinkaccentcolor:#2F4BE0}
+body{margin:0;background:#F2F4F7;color:#1B2230;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:60vh}
+.intro{max-width:1100px;margin:0 auto;padding:40px 24px 0}
+.intro h1{margin:0 0 .4rem;font-size:1.9rem}
+.intro p{margin:0 0 .6rem;max-width:70ch;color:#4A5366}
+.legende{max-width:1100px;margin:70vh auto 10px;padding:0 24px;color:#6A7385;font-size:.85rem}
+.bloc-teaser{max-width:1100px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.bloc-teaser *{box-sizing:border-box}
+.bloc-title{font-size:2rem;line-height:1.2}
+.bloc-title .pretitle{display:block;font-size:1rem;font-weight:700;color:var(--inwinkaccentcolor);margin-bottom:.4rem}
+.description{color:#4A5366}
+.text-wrapper.card{background:#fff;border-radius:6px;box-shadow:0 6px 24px rgba(20,26,38,.08)}
+.itembloccontentactions a[role=button]{display:inline-block;background:var(--inwinkaccentcolor);color:#fff;padding:.7rem 1.2rem;border-radius:4px;font-weight:700;cursor:pointer}
+.itembloccontentactions a[role=button]+a[role=button]{background:#fff;color:var(--inwinkaccentcolor);box-shadow:inset 0 0 0 2px var(--inwinkaccentcolor)}
+/* ---- Panneau de la démo ---- */
+.pan{position:fixed;right:16px;top:16px;bottom:16px;z-index:50;width:300px;overflow:auto;background:#fff;border-radius:8px;padding:14px 16px;
+  box-shadow:0 10px 40px rgba(20,26,38,.2);font-size:.85rem}
+.pan h2{font-size:1rem;margin:0 0 8px}
+.pan label{display:block;font-weight:700;margin:10px 0 3px}
+.pan .l{display:flex;gap:4px}
+.pan select{flex:1;min-width:0;font:inherit;padding:4px}
+.pan button{font:inherit;cursor:pointer;border:1px solid #C9CFDA;background:#fff;border-radius:4px;padding:3px 8px}
+.pan .rejouer{margin-top:12px;width:100%;font-weight:700;color:#2F4BE0;border-color:#2F4BE0;padding:6px}
+.pan code{display:block;margin-top:6px;padding:8px;background:#F2F4F7;border-radius:4px;word-break:break-word;font-size:.8rem;user-select:all}
+.pan .aide{color:#6A7385;font-weight:400;margin:3px 0 0}
+.pan .alerte{display:none;margin-top:10px;padding:8px;background:#FFF4D6;border:1px solid #E8CF84;border-radius:4px}
+.ligne{position:fixed;left:0;right:0;z-index:40;border-top:2px dashed #2F4BE0;pointer-events:none;opacity:.6}
+.ligne span{position:absolute;left:12px;top:-20px;font-size:.72rem;font-weight:700;color:#2F4BE0;background:#F2F4F7;padding:0 5px}
+@media (max-width:1000px){.pan{top:auto;left:8px;right:8px;width:auto;max-height:45vh}}
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>txim v0.1.0 : démo sur le DOM inwink</h1>
+  <p>Chaque bloc reproduit exactement le HTML et le CSS du gabarit « Contenu libre » texte + image. Le panneau pose les classes txim sur les quatre blocs à la fois ; faites défiler pour voir l'effet sur chaque mise en page.</p>
+  <p>Réduisez la fenêtre sous 767 px pour tester l'affichage mobile du gabarit.</p>
+</div>
+
+<p class="legende">Bloc 1 : Image à gauche, texte à gauche, moitié</p><div id="ct-00000000-0000-4000-8000-000000000001" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-left text-left half"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://cdn-assets.inwink.com/backoffice-public/assets/pictures/00-inwink/Background_Blue.jpg" alt="Trois jours pour repenser l'événementiel hybride"></div><div class="text-wrapper text-wrapper"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Le programme</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Trois jours pour repenser l'événementiel hybride</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">Plénières, ateliers pratiques et rendez-vous d'affaires : composez votre parcours à l'avance et recevez vos rappels sur l'application.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Voir le programme" tabindex="0">Voir le programme</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+<p class="legende">Bloc 2 : Image à droite, texte centré, texte large</p><div id="ct-00000000-0000-4000-8000-000000000002" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-right text-center large"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://picsum.photos/seed/txim2/1200/800" alt="Un ancien entrepôt industriel au bord du canal"></div><div class="text-wrapper text-wrapper"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Le lieu</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Un ancien entrepôt industriel au bord du canal</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">4 000 m² sur deux niveaux, une verrière centrale et trois salles modulables pour les sessions en petit comité.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Découvrir le lieu" tabindex="0">Découvrir le lieu</a><a class=" no-link" role="button" aria-label="Plan d'accès" tabindex="0">Plan d'accès</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+<p class="legende">Bloc 3 : Carte, image à gauche, texte centré</p><div id="ct-00000000-0000-4000-8000-000000000003" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-left text-center half is-card"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://picsum.photos/seed/txim3/1200/800" alt="Des rencontres planifiées, pas laissées au hasard"></div><div class="text-wrapper text-wrapper card"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Networking</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Des rencontres planifiées, pas laissées au hasard</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">Indiquez vos centres d'intérêt : l'application vous propose des rendez-vous de vingt minutes avec les participants proches de vos sujets.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Préparer mes rendez-vous" tabindex="0">Préparer mes rendez-vous</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+<p class="legende">Bloc 4 : Carte, image à droite, texte à droite, texte petit, image sombre</p><div id="ct-00000000-0000-4000-8000-000000000004" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-right text-right small is-card image-dark"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://picsum.photos/seed/txim4/1200/800" alt="Toutes les plénières disponibles en replay"></div><div class="text-wrapper text-wrapper card"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Replays</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Toutes les plénières disponibles en replay</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">Les vidéos sont en ligne le soir même, avec les supports des intervenants et un résumé de chaque session.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Accéder aux replays" tabindex="0">Accéder aux replays</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+
+<div class="ligne" id="ligne" aria-hidden="true"><span>Ligne de déclenchement</span></div>
+<aside class="pan" aria-label="Réglages">
+  <h2>Classes txim</h2>
+  <label for="placement">Classes posées sur</label>
+  <div class="l"><select id="placement"><option value="cw">.content-wrapper (champs du gabarit)</option><option value="ct">#ct-… (classe du bloc)</option></select></div>
+  <label for="image">Animation de l'image</label><div class="l"><button data-pas="image:-1">‹</button><select id="image"></select><button data-pas="image:1">›</button></div>
+  <label for="texte">Animation du texte</label><div class="l"><button data-pas="texte:-1">‹</button><select id="texte"></select><button data-pas="texte:1">›</button></div>
+  <label for="survol">Effet au survol</label><div class="l"><button data-pas="survol:-1">‹</button><select id="survol"></select><button data-pas="survol:1">›</button></div>
+  <p class="aide" id="descr"></p>
+  <label for="mode">Déclenchement</label><div class="l"><select id="mode"></select></div>
+  <label for="seuil">Hauteur de déclenchement</label><div class="l"><select id="seuil"></select></div>
+  <label for="force">Intensité</label><div class="l"><select id="force"></select></div>
+  <label for="vitesse">Vitesse</label><div class="l"><select id="vitesse"></select></div>
+  <button class="rejouer" id="rejouer" type="button">Rejouer (mode apparition)</button>
+  <label>Classes à ajouter</label><code id="sortie"></code>
+  <div class="alerte" id="alerte"></div>
+</aside>
+
+<script src="../txim.js"></script>
+<script>
+(function () {
+  var CAT = {"image": [["fondu", "Fondu montant", "L'image monte en apparaissant.", false], ["rideau", "Rideau", "L'image se dévoile depuis son bord extérieur en se dézoomant.", false], ["parallaxe", "Parallaxe", "L'image défile dans son cadre (toujours liée au défilement).", false], ["convergence", "Convergence", "L'image arrive de son bord extérieur en se redressant.", false], ["cercle", "Ouverture circulaire", "L'image s'ouvre en cercle depuis son centre.", false], ["volets", "Volets", "L'image se dévoile par bandes horizontales.", false], ["eclosion", "Éclosion", "L'image part d'une pastille ronde et s'agrandit.", false], ["portes", "Portes", "Deux panneaux de couleur d'accent s'écartent.", false], ["balayage", "Balayage", "Un aplat couvre le cadre puis se retire ; le texte attend.", false], ["diagonale", "Diagonale", "L'image se dévoile en diagonale depuis le coin extérieur.", false], ["pivot", "Pivot", "L'image arrive en tournant et en grossissant.", false], ["depliage", "Dépliage", "L'image se déplie en 3D depuis son bord.", false], ["atterrissage", "Atterrissage", "L'image arrive en grand par-dessus le texte puis se pose.", false], ["couleur", "Noir et blanc vers couleur", "L'image passe du noir et blanc à la couleur.", false], ["flou", "Mise au point (bloc entier)", "Le bloc passe du flou au net.", false], ["bascule", "Bascule 3D (bloc entier)", "Le bloc arrive incliné et se redresse.", false]], "texte": [["monte", "Montée", "Les éléments montent l'un après l'autre.", false], ["glisse", "Glissement latéral", "Les éléments glissent depuis le bord opposé à l'image.", false], ["fondu", "Fondu", "Fondu simple, élément par élément.", false], ["emergence", "Émergence", "Chaque élément sort d'une fente invisible.", false], ["focale", "Focale", "Le titre arrive agrandi et flou puis se pose net.", false], ["surligneur", "Surligneur", "Un trait de surligneur passe sous le titre.", false], ["encre", "Encre", "Titre et description se remplissent ligne par ligne.", false], ["zigzag", "Zigzag", "Les éléments arrivent alternativement de gauche et de droite.", false], ["parallaxe", "Parallaxe", "Le texte se décale pendant la traversée de l'écran.", false]], "survol": [["zoom", "Zoom et soulignement", "L'image se rapproche, le titre se souligne.", false], ["duotone", "Duotone", "La teinte d'accent glisse et révèle la couleur.", false], ["aplat", "Aplat décalé", "L'image vient se poser sur un aplat décalé.", false], ["inclinaison", "Inclinaison (JS)", "L'image s'incline vers le pointeur.", true], ["projecteur", "Projecteur (JS)", "Un halo suit le pointeur et révèle la couleur.", true], ["superposition", "Superposition", "Le texte glisse par-dessus l'image.", false]], "conflits": [[["i-balayage", "i-portes"], ["h-duotone", "h-inclinaison", "h-projecteur"], "même pseudo-élément ::after"], [["i-couleur"], ["h-duotone", "h-projecteur"], "même propriété filter sur l'image"]]};
+  var LISTES = {
+    image: [["", "Aucune"]].concat(CAT.image.map(function (e) { return ["txim-i-" + e[0], e[1]]; })),
+    texte: [["", "Aucune"]].concat(CAT.texte.map(function (e) { return ["txim-t-" + e[0], e[1]]; })),
+    survol: [["", "Aucun"]].concat(CAT.survol.map(function (e) { return ["txim-h-" + e[0], e[1]]; })),
+    mode: [["", "Lié au défilement (CSS pur)"], ["txim-apparition", "Joué à l'apparition (JS)"]],
+    seuil: [["txim-seuil-10", "10 %"], ["txim-seuil-20", "20 %"], ["", "25 % (défaut)"], ["txim-seuil-30", "30 %"], ["txim-seuil-40", "40 %"], ["txim-seuil-50", "50 %"]],
+    force: [["txim-force-05", "×0,5"], ["txim-force-075", "×0,75"], ["", "×1 (défaut)"], ["txim-force-15", "×1,5"], ["txim-force-2", "×2"]],
+    vitesse: [["txim-vif", "Vive"], ["", "Normale (défaut)"], ["txim-pose", "Posée"]]
+  };
+  var DESCR = {};
+  ["image", "texte", "survol"].forEach(function (f) {
+    var l = { image: "i", texte: "t", survol: "h" }[f];
+    CAT[f].forEach(function (e) { DESCR["txim-" + l + "-" + e[0]] = e[2] + (e[3] ? " JS requis." : ""); });
+  });
+  var $ = function (id) { return document.getElementById(id); };
+  Object.keys(LISTES).forEach(function (k) {
+    $(k).innerHTML = LISTES[k].map(function (o) { return '<option value="' + o[0] + '">' + o[1] + "</option>"; }).join("");
+  });
+  $("image").value = "txim-i-rideau"; $("texte").value = "txim-t-monte"; $("seuil").value = ""; $("force").value = ""; $("vitesse").value = "";
+
+  function appliquer() {
+    var c = ["image", "texte", "survol", "mode", "seuil", "force", "vitesse"].map(function (k) { return $(k).value; }).filter(Boolean);
+    document.querySelectorAll(".bloc-teaser").forEach(function (ct) {
+      var cw = ct.querySelector(".content-wrapper");
+      [ct, cw].forEach(function (el) {
+        [].slice.call(el.classList).forEach(function (k) { if (k.indexOf("txim-") === 0) el.classList.remove(k); });
+      });
+      if (c.length) ($("placement").value === "ct" ? ct : cw).classList.add.apply(($("placement").value === "ct" ? ct : cw).classList, c);
+    });
+    $("sortie").textContent = c.join(" ") || "(aucune)";
+    $("descr").textContent = [$("image").value, $("texte").value, $("survol").value].map(function (k) { return DESCR[k]; }).filter(Boolean).join(" ");
+    var s = { "txim-seuil-10": 10, "txim-seuil-20": 20, "txim-seuil-30": 30, "txim-seuil-40": 40, "txim-seuil-50": 50 }[$("seuil").value] || 25;
+    $("ligne").style.bottom = s + "%";
+    var al = CAT.conflits.filter(function (x) {
+      return x[0].indexOf($("image").value.replace("txim-", "")) >= 0 && x[1].indexOf($("survol").value.replace("txim-", "")) >= 0;
+    });
+    $("alerte").style.display = al.length ? "block" : "none";
+    $("alerte").textContent = al.length ? "Combinaison déconseillée : " + al[0][2] + "." : "";
+    $("rejouer").disabled = $("mode").value !== "txim-apparition";
+  }
+  document.querySelectorAll(".pan select").forEach(function (s) { s.addEventListener("change", appliquer); });
+  document.querySelectorAll("[data-pas]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-pas").split(":"), s = $(p[0]), n = s.options.length;
+      s.selectedIndex = (s.selectedIndex + +p[1] + n) % n; appliquer();
+    });
+  });
+  $("rejouer").addEventListener("click", function () { if (window.TXIM) TXIM.rejouer(); });
+  appliquer();
+})();
+</script>
+</body>
+</html>

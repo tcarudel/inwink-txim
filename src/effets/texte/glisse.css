@@ -1,0 +1,2 @@
+/* Texte : glisse depuis le bord opposé à l'image */
+.txim-t-glisse :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){--txim-sens:§D;animation-name:txim-lateral}

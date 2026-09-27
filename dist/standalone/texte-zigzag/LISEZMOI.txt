@@ -1,0 +1,5 @@
+Effet texte « Zigzag » : classe txim-t-zigzag sur le bloc (#ct-…) ou sur .content-wrapper.
+Les éléments arrivent alternativement de gauche et de droite.
+
+CSS : txim-texte-zigzag.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

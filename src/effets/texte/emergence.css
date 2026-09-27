@@ -1,0 +1,3 @@
+/* Texte : chaque élément sort d'une fente invisible */
+.txim-t-emergence :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-emergence}
+@keyframes txim-emergence{from{transform:translateY(100%);clip-path:inset(0 0 100% 0)}to{transform:none;clip-path:inset(0)}}

@@ -1,0 +1,5 @@
+Effet image « Parallaxe » : classe txim-i-parallaxe sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image défile dans son cadre (toujours liée au défilement).
+
+CSS : txim-image-parallaxe.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

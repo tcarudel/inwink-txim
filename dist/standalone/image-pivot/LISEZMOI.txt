@@ -1,0 +1,5 @@
+Effet image « Pivot » : classe txim-i-pivot sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image arrive en tournant et en grossissant.
+
+CSS : txim-image-pivot.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

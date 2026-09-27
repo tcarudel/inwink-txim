@@ -1,0 +1,5 @@
+Effet survol « Duotone » : classe txim-h-duotone sur le bloc (#ct-…) ou sur .content-wrapper.
+La teinte d'accent glisse et révèle la couleur.
+
+CSS : txim-survol-duotone.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

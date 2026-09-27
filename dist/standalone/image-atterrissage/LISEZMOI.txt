@@ -1,0 +1,5 @@
+Effet image « Atterrissage » : classe txim-i-atterrissage sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image arrive en grand par-dessus le texte puis se pose.
+
+CSS : txim-image-atterrissage.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

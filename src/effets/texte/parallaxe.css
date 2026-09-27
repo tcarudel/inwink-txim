@@ -1,0 +1,7 @@
+/* Texte : décalage vertical pendant toute la traversée de l'écran (toujours lié au défilement) */
+@supports (animation-timeline: view()){
+  .txim-t-parallaxe :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-parallaxe-texte!important;animation-timeline:--txim!important;
+    animation-duration:auto!important;animation-delay:0s!important;animation-play-state:running!important;
+    animation-timing-function:linear!important;animation-fill-mode:both!important;animation-range:cover 0% cover 100%!important}
+}
+@keyframes txim-parallaxe-texte{from{transform:translateY(calc(120px * §F))}to{transform:translateY(calc(-120px * §F))}}

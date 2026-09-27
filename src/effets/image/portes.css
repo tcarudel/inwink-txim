@@ -1,0 +1,6 @@
+/* Image : deux panneaux de couleur d'accent s'écartent (un seul pseudo-élément : ::before appartient au gabarit) */
+.txim-i-portes .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:linear-gradient(§A,§A),linear-gradient(§A,§A);background-repeat:no-repeat;
+  background-size:50.5% 100%,50.5% 100%;background-position:-120% 0,220% 0;animation-name:txim-portes}
+.txim-i-portes .picture{animation-name:txim-dezoom}
+@keyframes txim-portes{from{background-position:0 0,100% 0}}

@@ -1,0 +1,361 @@
+/*! txim v0.1.0 | bibliothèque complète | https://github.com/tcarudel/inwink-txim */
+/* ==========================================================================
+   Noyau txim : options, moteur (défilement / apparition), accessibilité.
+   Les classes peuvent être posées sur le conteneur du bloc (#ct-…) ou sur
+   .content-wrapper (via conditionalClasses du gabarit).
+
+   Variables publiques, surchargeables par bloc (ex. #ct-xxx { --txim-seuil: 37%; }) :
+   --txim-seuil   hauteur de déclenchement, depuis le bas de l'écran   (25%)
+   --txim-force   intensité : amplitude des mouvements                  (1)
+   --txim-course  mode défilement : distance de scroll de l'animation   (1)
+   --txim-duree   mode apparition : multiplie durées et décalages       (1)
+   --txim-accent  couleur des aplats              (repli : --inwinkaccentcolor)
+   --txim-fond    fond du texte pour le survol Superposition            (#fff)
+   ========================================================================== */
+
+/* ---------- Options ---------- */
+.txim-seuil-10{--txim-seuil:10%}
+.txim-seuil-20{--txim-seuil:20%}
+.txim-seuil-30{--txim-seuil:30%}
+.txim-seuil-40{--txim-seuil:40%}
+.txim-seuil-50{--txim-seuil:50%}
+.txim-force-05{--txim-force:.5}
+.txim-force-075{--txim-force:.75}
+.txim-force-15{--txim-force:1.5}
+.txim-force-2{--txim-force:2}
+.txim-vif{--txim-course:.6;--txim-duree:.7}
+.txim-pose{--txim-course:1.6;--txim-duree:1.5}
+
+/* ---------- Repères lus dans le gabarit (aucun JS) ---------- */
+.content-wrapper.image-right{--txim-dir:-1}
+.content-wrapper.text-center{--txim-origine:50%}
+.content-wrapper.text-right{--txim-origine:100%}
+
+/* ---------- Mise en place ---------- */
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper{overflow:hidden}
+:is([class*="txim-t-"] .content-wrapper,.content-wrapper[class*="txim-t-"]) :is(.pretitle,.bloctitle){display:block}   /* les transformations ne s'appliquent pas aux span en ligne */
+@media (max-width:767px){:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]){overflow-x:clip}}   /* mobile : pas de barre de défilement horizontale pendant les glissements */
+
+/* Ordre d'apparition (--txim-dt : décalage imposé par certains effets d'image) */
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper{--i:0}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle{--i:calc(1 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle{--i:calc(2 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description{--i:calc(3 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{--i:calc(4 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>:nth-child(2){--i:calc(4.5 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>:nth-child(n+3){--i:calc(5 + var(--txim-dt,0))}
+
+/* ---------- Moteur 1 : lié au défilement (CSS pur, par défaut) ---------- */
+@supports (animation-timeline: view()){
+  :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]){view-timeline:--txim block;view-timeline-inset:0% var(--txim-seuil,25%)}
+  :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]),
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper::after,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .fieldtext,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{
+    animation-timeline:--txim;animation-duration:auto;animation-delay:0s;
+    animation-timing-function:linear;animation-fill-mode:both;
+    animation-range-start:entry calc(var(--i,0) * 9% * var(--txim-course,1));
+    animation-range-end:entry calc((45% + var(--i,0) * 11%) * var(--txim-course,1))}
+}
+
+/* ---------- Moteur 2 : joué à l'apparition (le JS pose data-txim-arme puis data-txim-vu) ---------- */
+.content-wrapper[data-txim-arme],
+.content-wrapper[data-txim-arme] .picture-wrapper,
+.content-wrapper[data-txim-arme] .picture-wrapper::after,
+.content-wrapper[data-txim-arme] .picture,
+.content-wrapper[data-txim-arme] .pretitle,
+.content-wrapper[data-txim-arme] .bloctitle,
+.content-wrapper[data-txim-arme] .fieldtext,
+.content-wrapper[data-txim-arme] .description,
+.content-wrapper[data-txim-arme] .itembloccontentactions>*{
+  animation-timeline:auto;animation-range:normal;
+  animation-duration:calc(var(--dur,1s) * var(--txim-duree,1));
+  animation-delay:calc(var(--i,0) * 130ms * var(--txim-duree,1));
+  animation-timing-function:cubic-bezier(.2,.75,.2,1);animation-fill-mode:both;animation-play-state:paused}
+.content-wrapper[data-txim-arme][data-txim-vu],
+.content-wrapper[data-txim-arme][data-txim-vu] .picture-wrapper,
+.content-wrapper[data-txim-arme][data-txim-vu] .picture-wrapper::after,
+.content-wrapper[data-txim-arme][data-txim-vu] .picture,
+.content-wrapper[data-txim-arme][data-txim-vu] .pretitle,
+.content-wrapper[data-txim-arme][data-txim-vu] .bloctitle,
+.content-wrapper[data-txim-arme][data-txim-vu] .fieldtext,
+.content-wrapper[data-txim-arme][data-txim-vu] .description,
+.content-wrapper[data-txim-arme][data-txim-vu] .itembloccontentactions>*{animation-play-state:running}
+.content-wrapper[data-txim-reset],
+.content-wrapper[data-txim-reset] .picture-wrapper,
+.content-wrapper[data-txim-reset] .picture-wrapper::after,
+.content-wrapper[data-txim-reset] .picture,
+.content-wrapper[data-txim-reset] .pretitle,
+.content-wrapper[data-txim-reset] .bloctitle,
+.content-wrapper[data-txim-reset] .fieldtext,
+.content-wrapper[data-txim-reset] .description,
+.content-wrapper[data-txim-reset] .itembloccontentactions>*{animation-name:none!important}
+/* Sécurité : mode apparition sans JS (non chargé, en erreur) => contenu affiché, sans animation */
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]),
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture-wrapper,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture-wrapper::after,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .pretitle,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .bloctitle,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .fieldtext,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .description,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .itembloccontentactions>*{animation-name:none}
+
+/* ---------- Animations communes ---------- */
+@keyframes txim-monte{from{opacity:0;transform:translateY(calc(80px * var(--txim-force,1)))}}
+@keyframes txim-lateral{from{opacity:0;transform:translateX(calc(90px * var(--txim-force,1) * var(--txim-sens,1)))}}
+@keyframes txim-apparait{from{opacity:0}}
+@keyframes txim-dezoom{from{transform:scale(calc(1 + .5 * var(--txim-force,1)))}}
+
+/* ---------- Accessibilité ---------- */
+@media (prefers-reduced-motion: reduce){
+  html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]),
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper::after,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .fieldtext,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{animation:none!important;transition:none!important}
+}
+
+/* ===== image : Fondu montant (.txim-i-fondu) ===== */
+/* Image : fondu montant */
+.txim-i-fondu .picture-wrapper{animation-name:txim-monte}
+
+/* ===== image : Rideau (.txim-i-rideau) ===== */
+/* Image : rideau depuis le bord extérieur + dézoom */
+.txim-i-rideau .picture-wrapper{animation-name:txim-rideau}
+.txim-i-rideau .picture{animation-name:txim-dezoom}
+@keyframes txim-rideau{
+  from{clip-path:inset(0 calc(50% + 50% * var(--txim-dir,1)) 0 calc(50% - 50% * var(--txim-dir,1)))}
+  to{clip-path:inset(0)}}
+
+/* ===== image : Parallaxe (.txim-i-parallaxe) ===== */
+/* Image : parallaxe (toujours liée au défilement, quel que soit le mode) */
+.txim-i-parallaxe .picture{--txim-s:calc(1 + .35 * var(--txim-force,1))}
+@supports (animation-timeline: view()){
+  .txim-i-parallaxe .picture{animation-name:txim-parallaxe!important;animation-timeline:--txim!important;
+    animation-duration:auto!important;animation-delay:0s!important;animation-play-state:running!important;
+    animation-timing-function:linear!important;animation-fill-mode:both!important;animation-range:cover 0% cover 100%!important}
+}
+@keyframes txim-parallaxe{
+  from{transform:translateY(calc((var(--txim-s) - 1) / 2 * 100%)) scale(var(--txim-s))}
+  to{transform:translateY(calc((1 - var(--txim-s)) / 2 * 100%)) scale(var(--txim-s))}}
+
+/* ===== image : Convergence (.txim-i-convergence) ===== */
+/* Image : arrive de son bord extérieur en se redressant */
+.txim-i-convergence .picture-wrapper{animation-name:txim-convergence}
+@keyframes txim-convergence{from{opacity:0;transform:translateX(calc(-45% * var(--txim-force,1) * var(--txim-dir,1))) rotate(calc(-8deg * var(--txim-force,1) * var(--txim-dir,1)))}}
+
+/* ===== image : Ouverture circulaire (.txim-i-cercle) ===== */
+/* Image : ouverture circulaire */
+.txim-i-cercle .picture-wrapper{animation-name:txim-cercle}
+@keyframes txim-cercle{from{clip-path:circle(0% at 50% 50%)}to{clip-path:circle(75% at 50% 50%)}}
+
+/* ===== image : Volets (.txim-i-volets) ===== */
+/* Image : volets (bandes horizontales qui s'ouvrent ensemble) */
+/* Seule la variable --txim-v est animée (masque en couches de dégradé). Au repos (--txim-v = 1), les bandes se chevauchent. */
+@property --txim-v{syntax:'<number>';inherits:false;initial-value:1}
+.txim-i-volets .picture-wrapper{
+  --txim-volets:linear-gradient(180deg,transparent calc(0 * 12.5%),#000 calc(0 * 12.5%) calc(0 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(1 * 12.5%),#000 calc(1 * 12.5%) calc(1 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(2 * 12.5%),#000 calc(2 * 12.5%) calc(2 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(3 * 12.5%),#000 calc(3 * 12.5%) calc(3 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(4 * 12.5%),#000 calc(4 * 12.5%) calc(4 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(5 * 12.5%),#000 calc(5 * 12.5%) calc(5 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(6 * 12.5%),#000 calc(6 * 12.5%) calc(6 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(7 * 12.5%),#000 calc(7 * 12.5%) calc(7 * 12.5% + var(--txim-v) * 12.6%),transparent 0);
+  -webkit-mask-image:var(--txim-volets);mask-image:var(--txim-volets);animation-name:txim-volets}
+@keyframes txim-volets{from{--txim-v:0}}
+
+/* ===== image : Éclosion (.txim-i-eclosion) ===== */
+/* Image : part d'une pastille ronde et s'agrandit */
+.txim-i-eclosion .picture-wrapper{animation-name:txim-eclosion}
+@keyframes txim-eclosion{from{opacity:.2;border-radius:50%;transform:scale(calc(1 - .45 * var(--txim-force,1)))}}
+
+/* ===== image : Portes (.txim-i-portes) ===== */
+/* Image : deux panneaux de couleur d'accent s'écartent (un seul pseudo-élément : ::before appartient au gabarit) */
+.txim-i-portes .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:linear-gradient(var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)),var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0))),linear-gradient(var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)),var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)));background-repeat:no-repeat;
+  background-size:50.5% 100%,50.5% 100%;background-position:-120% 0,220% 0;animation-name:txim-portes}
+.txim-i-portes .picture{animation-name:txim-dezoom}
+@keyframes txim-portes{from{background-position:0 0,100% 0}}
+
+/* ===== image : Balayage (.txim-i-balayage) ===== */
+/* Image : un aplat couvre le cadre puis se retire ; le texte attend la fin */
+.txim-i-balayage{--txim-dt:4}
+.txim-i-balayage .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0));transform:scaleX(0);--dur:1.4s;animation-name:txim-balayage}
+.txim-i-balayage .picture{--dur:1.4s;animation-name:txim-mi}
+@keyframes txim-balayage{
+  0%{transform:scaleX(0);transform-origin:calc(50% - 50% * var(--txim-dir,1)) 50%}
+  50%{transform:scaleX(1);transform-origin:calc(50% - 50% * var(--txim-dir,1)) 50%}
+  50.01%{transform:scaleX(1);transform-origin:calc(50% + 50% * var(--txim-dir,1)) 50%}
+  100%{transform:scaleX(0);transform-origin:calc(50% + 50% * var(--txim-dir,1)) 50%}}
+@keyframes txim-mi{0%,50%{opacity:0}50.01%,100%{opacity:1}}
+
+/* ===== image : Diagonale (.txim-i-diagonale) ===== */
+/* Image : dévoilement en diagonale depuis le coin extérieur */
+.txim-i-diagonale .picture-wrapper{animation-name:txim-diagonale}
+.txim-i-diagonale .picture{animation-name:txim-dezoom}
+@keyframes txim-diagonale{
+  from{clip-path:polygon(calc(50% - 50% * var(--txim-dir,1)) 0,calc(50% - 50% * var(--txim-dir,1)) 0,calc(50% - 50% * var(--txim-dir,1)) 0)}
+  to{clip-path:polygon(calc(50% - 50% * var(--txim-dir,1)) 0,calc(50% + 150% * var(--txim-dir,1)) 0,calc(50% - 50% * var(--txim-dir,1)) 200%)}}
+
+/* ===== image : Pivot (.txim-i-pivot) ===== */
+/* Image : arrive en tournant et en grossissant */
+.txim-i-pivot .picture-wrapper{animation-name:txim-pivot}
+@keyframes txim-pivot{from{opacity:0;transform:rotate(calc(-16deg * var(--txim-force,1) * var(--txim-dir,1))) scale(calc(1 - .3 * var(--txim-force,1)))}}
+
+/* ===== image : Dépliage (.txim-i-depliage) ===== */
+/* Image : se déplie en 3D depuis son bord extérieur */
+.txim-i-depliage .picture-wrapper{transform-origin:calc(50% - 50% * var(--txim-dir,1)) 50%;animation-name:txim-depliage}
+@keyframes txim-depliage{from{opacity:0;transform:perspective(1000px) rotateY(calc(max(-88deg, -70deg * var(--txim-force,1)) * var(--txim-dir,1)))}}
+
+/* ===== image : Atterrissage (.txim-i-atterrissage) ===== */
+/* Image : arrive en grand par-dessus le texte puis se pose ; le texte suit */
+.txim-i-atterrissage{--txim-dt:3}
+.txim-i-atterrissage .picture-wrapper{z-index:2;--dur:1.2s;animation-name:txim-atterrissage}
+@keyframes txim-atterrissage{from{transform:translate(calc(55% * var(--txim-force,1) * var(--txim-dir,1)),calc(-12% * var(--txim-force,1))) scale(calc(1 + .45 * var(--txim-force,1)))}}
+
+/* ===== image : Noir et blanc vers couleur (.txim-i-couleur) ===== */
+/* Image : du noir et blanc à la couleur */
+.txim-i-couleur .picture{--dur:1.6s;animation-name:txim-couleur}
+@keyframes txim-couleur{from{filter:grayscale(1) contrast(1.1)}}
+
+/* ===== image : Mise au point (bloc entier) (.txim-i-flou) ===== */
+/* Bloc entier : mise au point (du flou au net) */
+:is(.txim-i-flou .content-wrapper,.content-wrapper.txim-i-flou){animation-name:txim-flou}
+@keyframes txim-flou{from{opacity:0;filter:blur(calc(22px * var(--txim-force,1)));transform:scale(calc(1 - .12 * var(--txim-force,1)))}}
+
+/* ===== image : Bascule 3D (bloc entier) (.txim-i-bascule) ===== */
+/* Bloc entier : arrive incliné vers l'arrière et se redresse */
+:is(.txim-i-bascule .content-wrapper,.content-wrapper.txim-i-bascule){transform-origin:50% 100%;animation-name:txim-bascule}
+@keyframes txim-bascule{from{opacity:.1;transform:perspective(1400px) rotateX(min(85deg, 55deg * var(--txim-force,1))) translateY(calc(160px * var(--txim-force,1)))}}
+
+/* ===== texte : Montée (.txim-t-monte) ===== */
+/* Texte : les éléments montent l'un après l'autre */
+.txim-t-monte :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+
+/* ===== texte : Glissement latéral (.txim-t-glisse) ===== */
+/* Texte : glisse depuis le bord opposé à l'image */
+.txim-t-glisse :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){--txim-sens:var(--txim-dir,1);animation-name:txim-lateral}
+
+/* ===== texte : Fondu (.txim-t-fondu) ===== */
+/* Texte : fondu simple, élément par élément */
+.txim-t-fondu :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-apparait}
+
+/* ===== texte : Émergence (.txim-t-emergence) ===== */
+/* Texte : chaque élément sort d'une fente invisible */
+.txim-t-emergence :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-emergence}
+@keyframes txim-emergence{from{transform:translateY(100%);clip-path:inset(0 0 100% 0)}to{transform:none;clip-path:inset(0)}}
+
+/* ===== texte : Focale (.txim-t-focale) ===== */
+/* Texte : le titre arrive agrandi et flou puis se pose net ; le reste monte */
+.txim-t-focale .bloctitle{transform-origin:var(--txim-origine,0%) 50%;--dur:1.3s;animation-name:txim-focale}
+.txim-t-focale :is(.pretitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+@keyframes txim-focale{from{opacity:0;filter:blur(calc(10px * var(--txim-force,1)));transform:scale(calc(1 + .35 * var(--txim-force,1)))}}
+
+/* ===== texte : Surligneur (.txim-t-surligneur) ===== */
+/* Texte : le texte monte, puis un trait de surligneur passe sous le titre */
+.txim-t-surligneur :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+.txim-t-surligneur .bloctitle .fieldtext{--i:calc(3 + var(--txim-dt,0));
+  background:linear-gradient(color-mix(in srgb,var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)) 25%,transparent),color-mix(in srgb,var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)) 25%,transparent)) 0 88%/100% 42% no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;animation-name:txim-surligne}
+@keyframes txim-surligne{from{background-size:0% 42%}}
+
+/* ===== texte : Encre (.txim-t-encre) ===== */
+/* Texte : titre et description se remplissent ligne par ligne (couleur du thème conservée) */
+.txim-t-encre :is(.bloctitle,.description) .fieldtext{
+  -webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
+  background-image:linear-gradient(currentColor,currentColor),linear-gradient(color-mix(in srgb,currentColor 22%,transparent),color-mix(in srgb,currentColor 22%,transparent));
+  background-repeat:no-repeat;background-size:100% 100%,100% 100%;--dur:1.6s;animation-name:txim-encre}
+.txim-t-encre :is(.pretitle,.itembloccontentactions>*){animation-name:txim-apparait}
+@keyframes txim-encre{from{background-size:0% 100%,100% 100%}}
+
+/* ===== texte : Zigzag (.txim-t-zigzag) ===== */
+/* Texte : les éléments arrivent alternativement de gauche et de droite */
+.txim-t-zigzag :is(.pretitle,.description){--txim-sens:-1;animation-name:txim-lateral}
+.txim-t-zigzag :is(.bloctitle,.itembloccontentactions>*){--txim-sens:1;animation-name:txim-lateral}
+
+/* ===== texte : Parallaxe (.txim-t-parallaxe) ===== */
+/* Texte : décalage vertical pendant toute la traversée de l'écran (toujours lié au défilement) */
+@supports (animation-timeline: view()){
+  .txim-t-parallaxe :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-parallaxe-texte!important;animation-timeline:--txim!important;
+    animation-duration:auto!important;animation-delay:0s!important;animation-play-state:running!important;
+    animation-timing-function:linear!important;animation-fill-mode:both!important;animation-range:cover 0% cover 100%!important}
+}
+@keyframes txim-parallaxe-texte{from{transform:translateY(calc(120px * var(--txim-force,1)))}to{transform:translateY(calc(-120px * var(--txim-force,1)))}}
+
+/* ===== survol : Zoom et soulignement (.txim-h-zoom) ===== */
+/* Survol : l'image se rapproche, le titre se souligne, le bouton se décale */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-zoom .picture{transition:scale 1s cubic-bezier(.2,.7,.2,1)}
+  .txim-h-zoom .bloctitle{text-decoration-line:underline;text-decoration-thickness:3px;text-underline-offset:.18em;
+    text-decoration-color:transparent;transition:text-decoration-color .4s}
+  .txim-h-zoom .itembloccontentactions>:first-child{transition:translate .4s}
+  :is(.txim-h-zoom .content-wrapper,.content-wrapper.txim-h-zoom):is(:hover,:focus-within) .picture{scale:1.15}
+  :is(.txim-h-zoom .content-wrapper,.content-wrapper.txim-h-zoom):is(:hover,:focus-within) .bloctitle{text-decoration-color:var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0))}
+  :is(.txim-h-zoom .content-wrapper,.content-wrapper.txim-h-zoom):is(:hover,:focus-within) .itembloccontentactions>:first-child{translate:10px 0}
+}
+
+/* ===== survol : Duotone (.txim-h-duotone) ===== */
+/* Survol : image teintée d'accent ; la teinte glisse et révèle la couleur */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-duotone .picture{filter:grayscale(1) contrast(1.2);transition:filter .7s,scale 1s}
+  .txim-h-duotone .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0));mix-blend-mode:screen;clip-path:inset(0);transition:clip-path .7s cubic-bezier(.7,0,.2,1)}
+  :is(.txim-h-duotone .content-wrapper,.content-wrapper.txim-h-duotone):is(:hover,:focus-within) .picture{filter:none;scale:1.06}
+  :is(.txim-h-duotone .content-wrapper,.content-wrapper.txim-h-duotone):is(:hover,:focus-within) .picture-wrapper::after{clip-path:inset(0 0 0 100%)}
+}
+
+/* ===== survol : Aplat décalé (.txim-h-aplat) ===== */
+/* Survol : un aplat de couleur décalé derrière l'image ; l'image vient s'y poser */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-aplat .picture-wrapper{box-shadow:calc(20px * var(--txim-dir,1)) 20px 0 var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0));transition:translate .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s cubic-bezier(.2,.7,.2,1)}
+  :is(.txim-h-aplat .content-wrapper,.content-wrapper.txim-h-aplat):is(:hover,:focus-within) .picture-wrapper{translate:calc(10px * var(--txim-dir,1)) 10px;box-shadow:calc(10px * var(--txim-dir,1)) 10px 0 var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0))}
+}
+
+/* ===== survol : Inclinaison (JS) (.txim-h-inclinaison) ===== */
+/* Survol : l'image s'incline vers le pointeur, avec un reflet (JS requis : --txim-px / --txim-py) */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur]{perspective:900px}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur] .picture-wrapper{
+    rotate:calc(.5 - clamp(0, var(--txim-py,.5), 1)) calc(clamp(0, var(--txim-px,.5), 1) - .5) 0
+           calc(hypot(clamp(0, var(--txim-px,.5), 1) - .5, clamp(0, var(--txim-py,.5), 1) - .5) * 44deg);
+    transition:rotate .5s cubic-bezier(.2,.7,.2,1)}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur]:hover .picture-wrapper{transition-duration:.12s}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur] .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .4s;
+    background:radial-gradient(circle at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),rgba(255,255,255,.5),transparent 55%)}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur]:hover .picture-wrapper::after{opacity:1}
+}
+
+/* ===== survol : Projecteur (JS) (.txim-h-projecteur) ===== */
+/* Survol : image assombrie, un halo suit le pointeur et révèle la couleur (JS requis) */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur] .picture{filter:grayscale(1) brightness(.45);transition:filter .4s}
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur] .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:var(--txim-src) center/cover no-repeat;opacity:0;transition:opacity .35s;
+    -webkit-mask-image:radial-gradient(circle 140px at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),#000 55%,transparent 100%);
+            mask-image:radial-gradient(circle 140px at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),#000 55%,transparent 100%)}
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur]:hover .picture-wrapper::after{opacity:1}
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur]:focus-within .picture{filter:none}
+}
+
+/* ===== survol : Superposition (.txim-h-superposition) ===== */
+/* Survol : le texte glisse par-dessus l'image, qui se rapproche */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-superposition .text-wrapper{position:relative;z-index:3;
+    transition:translate .6s cubic-bezier(.2,.7,.2,1),box-shadow .6s,background-color .3s}
+  .txim-h-superposition .picture{transition:scale 1s cubic-bezier(.2,.7,.2,1)}
+  :is(.txim-h-superposition .content-wrapper,.content-wrapper.txim-h-superposition):is(:hover,:focus-within) .text-wrapper{translate:calc(-30% * var(--txim-dir,1)) 0;
+    background-color:var(--txim-fond,#fff);box-shadow:0 24px 60px rgba(0,0,0,.18)}
+  :is(.txim-h-superposition .content-wrapper,.content-wrapper.txim-h-superposition):is(:hover,:focus-within) .picture{scale:1.1}
+}

@@ -1,0 +1,3 @@
+/* Texte : les éléments arrivent alternativement de gauche et de droite */
+.txim-t-zigzag :is(.pretitle,.description){--txim-sens:-1;animation-name:txim-lateral}
+.txim-t-zigzag :is(.bloctitle,.itembloccontentactions>*){--txim-sens:1;animation-name:txim-lateral}

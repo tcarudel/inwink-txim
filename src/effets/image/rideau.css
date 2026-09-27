@@ -1,0 +1,6 @@
+/* Image : rideau depuis le bord extérieur + dézoom */
+.txim-i-rideau .picture-wrapper{animation-name:txim-rideau}
+.txim-i-rideau .picture{animation-name:txim-dezoom}
+@keyframes txim-rideau{
+  from{clip-path:inset(0 calc(50% + 50% * §D) 0 calc(50% - 50% * §D))}
+  to{clip-path:inset(0)}}

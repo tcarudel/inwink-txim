@@ -1,0 +1,5 @@
+Effet texte « Surligneur » : classe txim-t-surligneur sur le bloc (#ct-…) ou sur .content-wrapper.
+Un trait de surligneur passe sous le titre.
+
+CSS : txim-texte-surligneur.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

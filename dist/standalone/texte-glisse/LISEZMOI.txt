@@ -1,0 +1,5 @@
+Effet texte « Glissement latéral » : classe txim-t-glisse sur le bloc (#ct-…) ou sur .content-wrapper.
+Les éléments glissent depuis le bord opposé à l'image.
+
+CSS : txim-texte-glisse.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

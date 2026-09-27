@@ -1,0 +1,5 @@
+Effet texte « Montée » : classe txim-t-monte sur le bloc (#ct-…) ou sur .content-wrapper.
+Les éléments montent l'un après l'autre.
+
+CSS : txim-texte-monte.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

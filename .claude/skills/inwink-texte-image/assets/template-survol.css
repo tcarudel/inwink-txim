@@ -1,0 +1,8 @@
+/* Survol : <description en une ligne> */
+/* Propriétés séparées (scale, translate, rotate) pour rester combinable avec les effets d'apparition. */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-<cle> .picture{transition:scale .8s cubic-bezier(.2,.7,.2,1)}
+  §HV(txim-h-<cle>):is(:hover,:focus-within) .picture{scale:1.1}
+  /* Besoin de la position du pointeur : §PTR(txim-h-<cle>) + ajouter la classe à POINTEUR dans src/core.js ;
+     variables disponibles : --txim-px, --txim-py (0 à 1 sur l'image), --txim-src (URL de l'image). */
+}

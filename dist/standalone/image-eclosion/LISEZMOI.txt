@@ -1,0 +1,5 @@
+Effet image « Éclosion » : classe txim-i-eclosion sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image part d'une pastille ronde et s'agrandit.
+
+CSS : txim-image-eclosion.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

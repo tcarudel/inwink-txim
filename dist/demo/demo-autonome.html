@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>txim v0.1.0 : démo sur le DOM inwink</title>
+<style>
+/*! txim v0.1.0 | bibliothèque complète | https://github.com/tcarudel/inwink-txim */
+/* ==========================================================================
+   Noyau txim : options, moteur (défilement / apparition), accessibilité.
+   Les classes peuvent être posées sur le conteneur du bloc (#ct-…) ou sur
+   .content-wrapper (via conditionalClasses du gabarit).
+
+   Variables publiques, surchargeables par bloc (ex. #ct-xxx { --txim-seuil: 37%; }) :
+   --txim-seuil   hauteur de déclenchement, depuis le bas de l'écran   (25%)
+   --txim-force   intensité : amplitude des mouvements                  (1)
+   --txim-course  mode défilement : distance de scroll de l'animation   (1)
+   --txim-duree   mode apparition : multiplie durées et décalages       (1)
+   --txim-accent  couleur des aplats              (repli : --inwinkaccentcolor)
+   --txim-fond    fond du texte pour le survol Superposition            (#fff)
+   ========================================================================== */
+
+/* ---------- Options ---------- */
+.txim-seuil-10{--txim-seuil:10%}
+.txim-seuil-20{--txim-seuil:20%}
+.txim-seuil-30{--txim-seuil:30%}
+.txim-seuil-40{--txim-seuil:40%}
+.txim-seuil-50{--txim-seuil:50%}
+.txim-force-05{--txim-force:.5}
+.txim-force-075{--txim-force:.75}
+.txim-force-15{--txim-force:1.5}
+.txim-force-2{--txim-force:2}
+.txim-vif{--txim-course:.6;--txim-duree:.7}
+.txim-pose{--txim-course:1.6;--txim-duree:1.5}
+
+/* ---------- Repères lus dans le gabarit (aucun JS) ---------- */
+.content-wrapper.image-right{--txim-dir:-1}
+.content-wrapper.text-center{--txim-origine:50%}
+.content-wrapper.text-right{--txim-origine:100%}
+
+/* ---------- Mise en place ---------- */
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper{overflow:hidden}
+:is([class*="txim-t-"] .content-wrapper,.content-wrapper[class*="txim-t-"]) :is(.pretitle,.bloctitle){display:block}   /* les transformations ne s'appliquent pas aux span en ligne */
+@media (max-width:767px){:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]){overflow-x:clip}}   /* mobile : pas de barre de défilement horizontale pendant les glissements */
+
+/* Ordre d'apparition (--txim-dt : décalage imposé par certains effets d'image) */
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper{--i:0}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle{--i:calc(1 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle{--i:calc(2 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description{--i:calc(3 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{--i:calc(4 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>:nth-child(2){--i:calc(4.5 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>:nth-child(n+3){--i:calc(5 + var(--txim-dt,0))}
+
+/* ---------- Moteur 1 : lié au défilement (CSS pur, par défaut) ---------- */
+@supports (animation-timeline: view()){
+  :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]){view-timeline:--txim block;view-timeline-inset:0% var(--txim-seuil,25%)}
+  :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]),
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper::after,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .fieldtext,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{
+    animation-timeline:--txim;animation-duration:auto;animation-delay:0s;
+    animation-timing-function:linear;animation-fill-mode:both;
+    animation-range-start:entry calc(var(--i,0) * 9% * var(--txim-course,1));
+    animation-range-end:entry calc((45% + var(--i,0) * 11%) * var(--txim-course,1))}
+}
+
+/* ---------- Moteur 2 : joué à l'apparition (le JS pose data-txim-arme puis data-txim-vu) ---------- */
+.content-wrapper[data-txim-arme],
+.content-wrapper[data-txim-arme] .picture-wrapper,
+.content-wrapper[data-txim-arme] .picture-wrapper::after,
+.content-wrapper[data-txim-arme] .picture,
+.content-wrapper[data-txim-arme] .pretitle,
+.content-wrapper[data-txim-arme] .bloctitle,
+.content-wrapper[data-txim-arme] .fieldtext,
+.content-wrapper[data-txim-arme] .description,
+.content-wrapper[data-txim-arme] .itembloccontentactions>*{
+  animation-timeline:auto;animation-range:normal;
+  animation-duration:calc(var(--dur,1s) * var(--txim-duree,1));
+  animation-delay:calc(var(--i,0) * 130ms * var(--txim-duree,1));
+  animation-timing-function:cubic-bezier(.2,.75,.2,1);animation-fill-mode:both;animation-play-state:paused}
+.content-wrapper[data-txim-arme][data-txim-vu],
+.content-wrapper[data-txim-arme][data-txim-vu] .picture-wrapper,
+.content-wrapper[data-txim-arme][data-txim-vu] .picture-wrapper::after,
+.content-wrapper[data-txim-arme][data-txim-vu] .picture,
+.content-wrapper[data-txim-arme][data-txim-vu] .pretitle,
+.content-wrapper[data-txim-arme][data-txim-vu] .bloctitle,
+.content-wrapper[data-txim-arme][data-txim-vu] .fieldtext,
+.content-wrapper[data-txim-arme][data-txim-vu] .description,
+.content-wrapper[data-txim-arme][data-txim-vu] .itembloccontentactions>*{animation-play-state:running}
+.content-wrapper[data-txim-reset],
+.content-wrapper[data-txim-reset] .picture-wrapper,
+.content-wrapper[data-txim-reset] .picture-wrapper::after,
+.content-wrapper[data-txim-reset] .picture,
+.content-wrapper[data-txim-reset] .pretitle,
+.content-wrapper[data-txim-reset] .bloctitle,
+.content-wrapper[data-txim-reset] .fieldtext,
+.content-wrapper[data-txim-reset] .description,
+.content-wrapper[data-txim-reset] .itembloccontentactions>*{animation-name:none!important}
+/* Sécurité : mode apparition sans JS (non chargé, en erreur) => contenu affiché, sans animation */
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]),
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture-wrapper,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture-wrapper::after,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .pretitle,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .bloctitle,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .fieldtext,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .description,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .itembloccontentactions>*{animation-name:none}
+
+/* ---------- Animations communes ---------- */
+@keyframes txim-monte{from{opacity:0;transform:translateY(calc(80px * var(--txim-force,1)))}}
+@keyframes txim-lateral{from{opacity:0;transform:translateX(calc(90px * var(--txim-force,1) * var(--txim-sens,1)))}}
+@keyframes txim-apparait{from{opacity:0}}
+@keyframes txim-dezoom{from{transform:scale(calc(1 + .5 * var(--txim-force,1)))}}
+
+/* ---------- Accessibilité ---------- */
+@media (prefers-reduced-motion: reduce){
+  html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]),
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper::after,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .fieldtext,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{animation:none!important;transition:none!important}
+}
+
+/* ===== image : Fondu montant (.txim-i-fondu) ===== */
+/* Image : fondu montant */
+.txim-i-fondu .picture-wrapper{animation-name:txim-monte}
+
+/* ===== image : Rideau (.txim-i-rideau) ===== */
+/* Image : rideau depuis le bord extérieur + dézoom */
+.txim-i-rideau .picture-wrapper{animation-name:txim-rideau}
+.txim-i-rideau .picture{animation-name:txim-dezoom}
+@keyframes txim-rideau{
+  from{clip-path:inset(0 calc(50% + 50% * var(--txim-dir,1)) 0 calc(50% - 50% * var(--txim-dir,1)))}
+  to{clip-path:inset(0)}}
+
+/* ===== image : Parallaxe (.txim-i-parallaxe) ===== */
+/* Image : parallaxe (toujours liée au défilement, quel que soit le mode) */
+.txim-i-parallaxe .picture{--txim-s:calc(1 + .35 * var(--txim-force,1))}
+@supports (animation-timeline: view()){
+  .txim-i-parallaxe .picture{animation-name:txim-parallaxe!important;animation-timeline:--txim!important;
+    animation-duration:auto!important;animation-delay:0s!important;animation-play-state:running!important;
+    animation-timing-function:linear!important;animation-fill-mode:both!important;animation-range:cover 0% cover 100%!important}
+}
+@keyframes txim-parallaxe{
+  from{transform:translateY(calc((var(--txim-s) - 1) / 2 * 100%)) scale(var(--txim-s))}
+  to{transform:translateY(calc((1 - var(--txim-s)) / 2 * 100%)) scale(var(--txim-s))}}
+
+/* ===== image : Convergence (.txim-i-convergence) ===== */
+/* Image : arrive de son bord extérieur en se redressant */
+.txim-i-convergence .picture-wrapper{animation-name:txim-convergence}
+@keyframes txim-convergence{from{opacity:0;transform:translateX(calc(-45% * var(--txim-force,1) * var(--txim-dir,1))) rotate(calc(-8deg * var(--txim-force,1) * var(--txim-dir,1)))}}
+
+/* ===== image : Ouverture circulaire (.txim-i-cercle) ===== */
+/* Image : ouverture circulaire */
+.txim-i-cercle .picture-wrapper{animation-name:txim-cercle}
+@keyframes txim-cercle{from{clip-path:circle(0% at 50% 50%)}to{clip-path:circle(75% at 50% 50%)}}
+
+/* ===== image : Volets (.txim-i-volets) ===== */
+/* Image : volets (bandes horizontales qui s'ouvrent ensemble) */
+/* Seule la variable --txim-v est animée (masque en couches de dégradé). Au repos (--txim-v = 1), les bandes se chevauchent. */
+@property --txim-v{syntax:'<number>';inherits:false;initial-value:1}
+.txim-i-volets .picture-wrapper{
+  --txim-volets:linear-gradient(180deg,transparent calc(0 * 12.5%),#000 calc(0 * 12.5%) calc(0 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(1 * 12.5%),#000 calc(1 * 12.5%) calc(1 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(2 * 12.5%),#000 calc(2 * 12.5%) calc(2 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(3 * 12.5%),#000 calc(3 * 12.5%) calc(3 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(4 * 12.5%),#000 calc(4 * 12.5%) calc(4 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(5 * 12.5%),#000 calc(5 * 12.5%) calc(5 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(6 * 12.5%),#000 calc(6 * 12.5%) calc(6 * 12.5% + var(--txim-v) * 12.6%),transparent 0),
+    linear-gradient(180deg,transparent calc(7 * 12.5%),#000 calc(7 * 12.5%) calc(7 * 12.5% + var(--txim-v) * 12.6%),transparent 0);
+  -webkit-mask-image:var(--txim-volets);mask-image:var(--txim-volets);animation-name:txim-volets}
+@keyframes txim-volets{from{--txim-v:0}}
+
+/* ===== image : Éclosion (.txim-i-eclosion) ===== */
+/* Image : part d'une pastille ronde et s'agrandit */
+.txim-i-eclosion .picture-wrapper{animation-name:txim-eclosion}
+@keyframes txim-eclosion{from{opacity:.2;border-radius:50%;transform:scale(calc(1 - .45 * var(--txim-force,1)))}}
+
+/* ===== image : Portes (.txim-i-portes) ===== */
+/* Image : deux panneaux de couleur d'accent s'écartent (un seul pseudo-élément : ::before appartient au gabarit) */
+.txim-i-portes .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:linear-gradient(var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)),var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0))),linear-gradient(var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)),var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)));background-repeat:no-repeat;
+  background-size:50.5% 100%,50.5% 100%;background-position:-120% 0,220% 0;animation-name:txim-portes}
+.txim-i-portes .picture{animation-name:txim-dezoom}
+@keyframes txim-portes{from{background-position:0 0,100% 0}}
+
+/* ===== image : Balayage (.txim-i-balayage) ===== */
+/* Image : un aplat couvre le cadre puis se retire ; le texte attend la fin */
+.txim-i-balayage{--txim-dt:4}
+.txim-i-balayage .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0));transform:scaleX(0);--dur:1.4s;animation-name:txim-balayage}
+.txim-i-balayage .picture{--dur:1.4s;animation-name:txim-mi}
+@keyframes txim-balayage{
+  0%{transform:scaleX(0);transform-origin:calc(50% - 50% * var(--txim-dir,1)) 50%}
+  50%{transform:scaleX(1);transform-origin:calc(50% - 50% * var(--txim-dir,1)) 50%}
+  50.01%{transform:scaleX(1);transform-origin:calc(50% + 50% * var(--txim-dir,1)) 50%}
+  100%{transform:scaleX(0);transform-origin:calc(50% + 50% * var(--txim-dir,1)) 50%}}
+@keyframes txim-mi{0%,50%{opacity:0}50.01%,100%{opacity:1}}
+
+/* ===== image : Diagonale (.txim-i-diagonale) ===== */
+/* Image : dévoilement en diagonale depuis le coin extérieur */
+.txim-i-diagonale .picture-wrapper{animation-name:txim-diagonale}
+.txim-i-diagonale .picture{animation-name:txim-dezoom}
+@keyframes txim-diagonale{
+  from{clip-path:polygon(calc(50% - 50% * var(--txim-dir,1)) 0,calc(50% - 50% * var(--txim-dir,1)) 0,calc(50% - 50% * var(--txim-dir,1)) 0)}
+  to{clip-path:polygon(calc(50% - 50% * var(--txim-dir,1)) 0,calc(50% + 150% * var(--txim-dir,1)) 0,calc(50% - 50% * var(--txim-dir,1)) 200%)}}
+
+/* ===== image : Pivot (.txim-i-pivot) ===== */
+/* Image : arrive en tournant et en grossissant */
+.txim-i-pivot .picture-wrapper{animation-name:txim-pivot}
+@keyframes txim-pivot{from{opacity:0;transform:rotate(calc(-16deg * var(--txim-force,1) * var(--txim-dir,1))) scale(calc(1 - .3 * var(--txim-force,1)))}}
+
+/* ===== image : Dépliage (.txim-i-depliage) ===== */
+/* Image : se déplie en 3D depuis son bord extérieur */
+.txim-i-depliage .picture-wrapper{transform-origin:calc(50% - 50% * var(--txim-dir,1)) 50%;animation-name:txim-depliage}
+@keyframes txim-depliage{from{opacity:0;transform:perspective(1000px) rotateY(calc(max(-88deg, -70deg * var(--txim-force,1)) * var(--txim-dir,1)))}}
+
+/* ===== image : Atterrissage (.txim-i-atterrissage) ===== */
+/* Image : arrive en grand par-dessus le texte puis se pose ; le texte suit */
+.txim-i-atterrissage{--txim-dt:3}
+.txim-i-atterrissage .picture-wrapper{z-index:2;--dur:1.2s;animation-name:txim-atterrissage}
+@keyframes txim-atterrissage{from{transform:translate(calc(55% * var(--txim-force,1) * var(--txim-dir,1)),calc(-12% * var(--txim-force,1))) scale(calc(1 + .45 * var(--txim-force,1)))}}
+
+/* ===== image : Noir et blanc vers couleur (.txim-i-couleur) ===== */
+/* Image : du noir et blanc à la couleur */
+.txim-i-couleur .picture{--dur:1.6s;animation-name:txim-couleur}
+@keyframes txim-couleur{from{filter:grayscale(1) contrast(1.1)}}
+
+/* ===== image : Mise au point (bloc entier) (.txim-i-flou) ===== */
+/* Bloc entier : mise au point (du flou au net) */
+:is(.txim-i-flou .content-wrapper,.content-wrapper.txim-i-flou){animation-name:txim-flou}
+@keyframes txim-flou{from{opacity:0;filter:blur(calc(22px * var(--txim-force,1)));transform:scale(calc(1 - .12 * var(--txim-force,1)))}}
+
+/* ===== image : Bascule 3D (bloc entier) (.txim-i-bascule) ===== */
+/* Bloc entier : arrive incliné vers l'arrière et se redresse */
+:is(.txim-i-bascule .content-wrapper,.content-wrapper.txim-i-bascule){transform-origin:50% 100%;animation-name:txim-bascule}
+@keyframes txim-bascule{from{opacity:.1;transform:perspective(1400px) rotateX(min(85deg, 55deg * var(--txim-force,1))) translateY(calc(160px * var(--txim-force,1)))}}
+
+/* ===== texte : Montée (.txim-t-monte) ===== */
+/* Texte : les éléments montent l'un après l'autre */
+.txim-t-monte :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+
+/* ===== texte : Glissement latéral (.txim-t-glisse) ===== */
+/* Texte : glisse depuis le bord opposé à l'image */
+.txim-t-glisse :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){--txim-sens:var(--txim-dir,1);animation-name:txim-lateral}
+
+/* ===== texte : Fondu (.txim-t-fondu) ===== */
+/* Texte : fondu simple, élément par élément */
+.txim-t-fondu :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-apparait}
+
+/* ===== texte : Émergence (.txim-t-emergence) ===== */
+/* Texte : chaque élément sort d'une fente invisible */
+.txim-t-emergence :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-emergence}
+@keyframes txim-emergence{from{transform:translateY(100%);clip-path:inset(0 0 100% 0)}to{transform:none;clip-path:inset(0)}}
+
+/* ===== texte : Focale (.txim-t-focale) ===== */
+/* Texte : le titre arrive agrandi et flou puis se pose net ; le reste monte */
+.txim-t-focale .bloctitle{transform-origin:var(--txim-origine,0%) 50%;--dur:1.3s;animation-name:txim-focale}
+.txim-t-focale :is(.pretitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+@keyframes txim-focale{from{opacity:0;filter:blur(calc(10px * var(--txim-force,1)));transform:scale(calc(1 + .35 * var(--txim-force,1)))}}
+
+/* ===== texte : Surligneur (.txim-t-surligneur) ===== */
+/* Texte : le texte monte, puis un trait de surligneur passe sous le titre */
+.txim-t-surligneur :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+.txim-t-surligneur .bloctitle .fieldtext{--i:calc(3 + var(--txim-dt,0));
+  background:linear-gradient(color-mix(in srgb,var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)) 25%,transparent),color-mix(in srgb,var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)) 25%,transparent)) 0 88%/100% 42% no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;animation-name:txim-surligne}
+@keyframes txim-surligne{from{background-size:0% 42%}}
+
+/* ===== texte : Encre (.txim-t-encre) ===== */
+/* Texte : titre et description se remplissent ligne par ligne (couleur du thème conservée) */
+.txim-t-encre :is(.bloctitle,.description) .fieldtext{
+  -webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
+  background-image:linear-gradient(currentColor,currentColor),linear-gradient(color-mix(in srgb,currentColor 22%,transparent),color-mix(in srgb,currentColor 22%,transparent));
+  background-repeat:no-repeat;background-size:100% 100%,100% 100%;--dur:1.6s;animation-name:txim-encre}
+.txim-t-encre :is(.pretitle,.itembloccontentactions>*){animation-name:txim-apparait}
+@keyframes txim-encre{from{background-size:0% 100%,100% 100%}}
+
+/* ===== texte : Zigzag (.txim-t-zigzag) ===== */
+/* Texte : les éléments arrivent alternativement de gauche et de droite */
+.txim-t-zigzag :is(.pretitle,.description){--txim-sens:-1;animation-name:txim-lateral}
+.txim-t-zigzag :is(.bloctitle,.itembloccontentactions>*){--txim-sens:1;animation-name:txim-lateral}
+
+/* ===== texte : Parallaxe (.txim-t-parallaxe) ===== */
+/* Texte : décalage vertical pendant toute la traversée de l'écran (toujours lié au défilement) */
+@supports (animation-timeline: view()){
+  .txim-t-parallaxe :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-parallaxe-texte!important;animation-timeline:--txim!important;
+    animation-duration:auto!important;animation-delay:0s!important;animation-play-state:running!important;
+    animation-timing-function:linear!important;animation-fill-mode:both!important;animation-range:cover 0% cover 100%!important}
+}
+@keyframes txim-parallaxe-texte{from{transform:translateY(calc(120px * var(--txim-force,1)))}to{transform:translateY(calc(-120px * var(--txim-force,1)))}}
+
+/* ===== survol : Zoom et soulignement (.txim-h-zoom) ===== */
+/* Survol : l'image se rapproche, le titre se souligne, le bouton se décale */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-zoom .picture{transition:scale 1s cubic-bezier(.2,.7,.2,1)}
+  .txim-h-zoom .bloctitle{text-decoration-line:underline;text-decoration-thickness:3px;text-underline-offset:.18em;
+    text-decoration-color:transparent;transition:text-decoration-color .4s}
+  .txim-h-zoom .itembloccontentactions>:first-child{transition:translate .4s}
+  :is(.txim-h-zoom .content-wrapper,.content-wrapper.txim-h-zoom):is(:hover,:focus-within) .picture{scale:1.15}
+  :is(.txim-h-zoom .content-wrapper,.content-wrapper.txim-h-zoom):is(:hover,:focus-within) .bloctitle{text-decoration-color:var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0))}
+  :is(.txim-h-zoom .content-wrapper,.content-wrapper.txim-h-zoom):is(:hover,:focus-within) .itembloccontentactions>:first-child{translate:10px 0}
+}
+
+/* ===== survol : Duotone (.txim-h-duotone) ===== */
+/* Survol : image teintée d'accent ; la teinte glisse et révèle la couleur */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-duotone .picture{filter:grayscale(1) contrast(1.2);transition:filter .7s,scale 1s}
+  .txim-h-duotone .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0));mix-blend-mode:screen;clip-path:inset(0);transition:clip-path .7s cubic-bezier(.7,0,.2,1)}
+  :is(.txim-h-duotone .content-wrapper,.content-wrapper.txim-h-duotone):is(:hover,:focus-within) .picture{filter:none;scale:1.06}
+  :is(.txim-h-duotone .content-wrapper,.content-wrapper.txim-h-duotone):is(:hover,:focus-within) .picture-wrapper::after{clip-path:inset(0 0 0 100%)}
+}
+
+/* ===== survol : Aplat décalé (.txim-h-aplat) ===== */
+/* Survol : un aplat de couleur décalé derrière l'image ; l'image vient s'y poser */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-aplat .picture-wrapper{box-shadow:calc(20px * var(--txim-dir,1)) 20px 0 var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0));transition:translate .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s cubic-bezier(.2,.7,.2,1)}
+  :is(.txim-h-aplat .content-wrapper,.content-wrapper.txim-h-aplat):is(:hover,:focus-within) .picture-wrapper{translate:calc(10px * var(--txim-dir,1)) 10px;box-shadow:calc(10px * var(--txim-dir,1)) 10px 0 var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0))}
+}
+
+/* ===== survol : Inclinaison (JS) (.txim-h-inclinaison) ===== */
+/* Survol : l'image s'incline vers le pointeur, avec un reflet (JS requis : --txim-px / --txim-py) */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur]{perspective:900px}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur] .picture-wrapper{
+    rotate:calc(.5 - clamp(0, var(--txim-py,.5), 1)) calc(clamp(0, var(--txim-px,.5), 1) - .5) 0
+           calc(hypot(clamp(0, var(--txim-px,.5), 1) - .5, clamp(0, var(--txim-py,.5), 1) - .5) * 44deg);
+    transition:rotate .5s cubic-bezier(.2,.7,.2,1)}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur]:hover .picture-wrapper{transition-duration:.12s}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur] .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .4s;
+    background:radial-gradient(circle at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),rgba(255,255,255,.5),transparent 55%)}
+  :is(.txim-h-inclinaison .content-wrapper,.content-wrapper.txim-h-inclinaison)[data-txim-pointeur]:hover .picture-wrapper::after{opacity:1}
+}
+
+/* ===== survol : Projecteur (JS) (.txim-h-projecteur) ===== */
+/* Survol : image assombrie, un halo suit le pointeur et révèle la couleur (JS requis) */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur] .picture{filter:grayscale(1) brightness(.45);transition:filter .4s}
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur] .picture-wrapper::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:var(--txim-src) center/cover no-repeat;opacity:0;transition:opacity .35s;
+    -webkit-mask-image:radial-gradient(circle 140px at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),#000 55%,transparent 100%);
+            mask-image:radial-gradient(circle 140px at calc(var(--txim-px,.5) * 100%) calc(var(--txim-py,.5) * 100%),#000 55%,transparent 100%)}
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur]:hover .picture-wrapper::after{opacity:1}
+  :is(.txim-h-projecteur .content-wrapper,.content-wrapper.txim-h-projecteur)[data-txim-pointeur]:focus-within .picture{filter:none}
+}
+
+/* ===== survol : Superposition (.txim-h-superposition) ===== */
+/* Survol : le texte glisse par-dessus l'image, qui se rapproche */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-superposition .text-wrapper{position:relative;z-index:3;
+    transition:translate .6s cubic-bezier(.2,.7,.2,1),box-shadow .6s,background-color .3s}
+  .txim-h-superposition .picture{transition:scale 1s cubic-bezier(.2,.7,.2,1)}
+  :is(.txim-h-superposition .content-wrapper,.content-wrapper.txim-h-superposition):is(:hover,:focus-within) .text-wrapper{translate:calc(-30% * var(--txim-dir,1)) 0;
+    background-color:var(--txim-fond,#fff);box-shadow:0 24px 60px rgba(0,0,0,.18)}
+  :is(.txim-h-superposition .content-wrapper,.content-wrapper.txim-h-superposition):is(:hover,:focus-within) .picture{scale:1.1}
+}
+</style>
+<style>
+/* ---- Thème simulant inwink (hors bibliothèque) ---- */
+:root{--inwinkaccentcolor:#2F4BE0}
+body{margin:0;background:#F2F4F7;color:#1B2230;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:60vh}
+.intro{max-width:1100px;margin:0 auto;padding:40px 24px 0}
+.intro h1{margin:0 0 .4rem;font-size:1.9rem}
+.intro p{margin:0 0 .6rem;max-width:70ch;color:#4A5366}
+.legende{max-width:1100px;margin:70vh auto 10px;padding:0 24px;color:#6A7385;font-size:.85rem}
+.bloc-teaser{max-width:1100px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.bloc-teaser *{box-sizing:border-box}
+.bloc-title{font-size:2rem;line-height:1.2}
+.bloc-title .pretitle{display:block;font-size:1rem;font-weight:700;color:var(--inwinkaccentcolor);margin-bottom:.4rem}
+.description{color:#4A5366}
+.text-wrapper.card{background:#fff;border-radius:6px;box-shadow:0 6px 24px rgba(20,26,38,.08)}
+.itembloccontentactions a[role=button]{display:inline-block;background:var(--inwinkaccentcolor);color:#fff;padding:.7rem 1.2rem;border-radius:4px;font-weight:700;cursor:pointer}
+.itembloccontentactions a[role=button]+a[role=button]{background:#fff;color:var(--inwinkaccentcolor);box-shadow:inset 0 0 0 2px var(--inwinkaccentcolor)}
+/* ---- Panneau de la démo ---- */
+.pan{position:fixed;right:16px;top:16px;bottom:16px;z-index:50;width:300px;overflow:auto;background:#fff;border-radius:8px;padding:14px 16px;
+  box-shadow:0 10px 40px rgba(20,26,38,.2);font-size:.85rem}
+.pan h2{font-size:1rem;margin:0 0 8px}
+.pan label{display:block;font-weight:700;margin:10px 0 3px}
+.pan .l{display:flex;gap:4px}
+.pan select{flex:1;min-width:0;font:inherit;padding:4px}
+.pan button{font:inherit;cursor:pointer;border:1px solid #C9CFDA;background:#fff;border-radius:4px;padding:3px 8px}
+.pan .rejouer{margin-top:12px;width:100%;font-weight:700;color:#2F4BE0;border-color:#2F4BE0;padding:6px}
+.pan code{display:block;margin-top:6px;padding:8px;background:#F2F4F7;border-radius:4px;word-break:break-word;font-size:.8rem;user-select:all}
+.pan .aide{color:#6A7385;font-weight:400;margin:3px 0 0}
+.pan .alerte{display:none;margin-top:10px;padding:8px;background:#FFF4D6;border:1px solid #E8CF84;border-radius:4px}
+.ligne{position:fixed;left:0;right:0;z-index:40;border-top:2px dashed #2F4BE0;pointer-events:none;opacity:.6}
+.ligne span{position:absolute;left:12px;top:-20px;font-size:.72rem;font-weight:700;color:#2F4BE0;background:#F2F4F7;padding:0 5px}
+@media (max-width:1000px){.pan{top:auto;left:8px;right:8px;width:auto;max-height:45vh}}
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>txim v0.1.0 : démo sur le DOM inwink</h1>
+  <p>Chaque bloc reproduit exactement le HTML et le CSS du gabarit « Contenu libre » texte + image. Le panneau pose les classes txim sur les quatre blocs à la fois ; faites défiler pour voir l'effet sur chaque mise en page.</p>
+  <p>Réduisez la fenêtre sous 767 px pour tester l'affichage mobile du gabarit.</p>
+</div>
+
+<p class="legende">Bloc 1 : Image à gauche, texte à gauche, moitié</p><div id="ct-00000000-0000-4000-8000-000000000001" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-left text-left half"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://cdn-assets.inwink.com/backoffice-public/assets/pictures/00-inwink/Background_Blue.jpg" alt="Trois jours pour repenser l'événementiel hybride"></div><div class="text-wrapper text-wrapper"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Le programme</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Trois jours pour repenser l'événementiel hybride</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">Plénières, ateliers pratiques et rendez-vous d'affaires : composez votre parcours à l'avance et recevez vos rappels sur l'application.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Voir le programme" tabindex="0">Voir le programme</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000001 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000001 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+<p class="legende">Bloc 2 : Image à droite, texte centré, texte large</p><div id="ct-00000000-0000-4000-8000-000000000002" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-right text-center large"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://picsum.photos/seed/txim2/1200/800" alt="Un ancien entrepôt industriel au bord du canal"></div><div class="text-wrapper text-wrapper"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Le lieu</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Un ancien entrepôt industriel au bord du canal</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">4 000 m² sur deux niveaux, une verrière centrale et trois salles modulables pour les sessions en petit comité.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Découvrir le lieu" tabindex="0">Découvrir le lieu</a><a class=" no-link" role="button" aria-label="Plan d'accès" tabindex="0">Plan d'accès</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000002 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000002 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+<p class="legende">Bloc 3 : Carte, image à gauche, texte centré</p><div id="ct-00000000-0000-4000-8000-000000000003" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-left text-center half is-card"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://picsum.photos/seed/txim3/1200/800" alt="Des rencontres planifiées, pas laissées au hasard"></div><div class="text-wrapper text-wrapper card"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Networking</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Des rencontres planifiées, pas laissées au hasard</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">Indiquez vos centres d'intérêt : l'application vous propose des rendez-vous de vingt minutes avec les participants proches de vos sujets.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Préparer mes rendez-vous" tabindex="0">Préparer mes rendez-vous</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000003 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000003 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+<p class="legende">Bloc 4 : Carte, image à droite, texte à droite, texte petit, image sombre</p><div id="ct-00000000-0000-4000-8000-000000000004" class=" dynamicbloc-contentwrapper bloc-teaser cmsorigin-maincontent"><div class="dynamiccontentbloc"><div class="bloc-content"><div class="content-wrapper image-right text-right small is-card image-dark"><div class="picture-wrapper picture-wrapper"><img class="picture " loading="lazy" src="https://picsum.photos/seed/txim4/1200/800" alt="Toutes les plénières disponibles en replay"></div><div class="text-wrapper text-wrapper card"><h2 class="bloc-title bloc-title"><span class="pretitle bloc-accent pretitle bloc-accent"><span class="fieldval"><span class="fieldtext">Replays</span></span></span><span class="bloctitle bloctitle"><span class="fieldval"><span class="fieldtext">Toutes les plénières disponibles en replay</span></span></span></h2><div class="description description"><span class="fieldval"><span class="fieldtext">Les vidéos sont en ligne le soir même, avec les supports des intervenants et un résumé de chaque session.</span></span></div><div class="itembloccontentactions"><a class=" no-link" role="button" aria-label="Accéder aux replays" tabindex="0">Accéder aux replays</a></div></div></div></div></div><div class="iw-clearfix"></div><style>
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-light .picture-wrapper:before {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-dark .picture-wrapper:before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-left {
+  flex-flow: row wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-left .text-wrapper:not(.card) {
+  padding-left: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-right {
+  flex-flow: row-reverse wrap;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.image-right .text-wrapper {
+  padding-right: 40px;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-center .text-wrapper {
+  align-items: center;
+  text-align: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-center .itembloccontentactions {
+  justify-content: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-right .text-wrapper {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.text-right .itembloccontentactions {
+  justify-content: flex-end;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {
+  width: 50%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.large .text-wrapper {
+  width: 65%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.large .picture-wrapper {
+  width: 35%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.small .text-wrapper {
+  width: 35%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.small .picture-wrapper {
+  width: 65%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .text-wrapper > * {
+  margin: 0;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .picture-wrapper {
+  display: flex;
+  position: relative;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .picture {
+  object-fit: contain;
+  width: 100%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .text-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .itembloccontentactions {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .itembloccontentactions a[role=button] {
+  margin: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {
+  width: 48%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.large .text-wrapper {
+  width: 63%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.large .picture-wrapper {
+  width: 33%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.small .text-wrapper {
+  width: 33%;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card.small .picture-wrapper {
+  width: 63%;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card .text-wrapper {
+  padding: 2.5rem;
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card .picture {
+  object-fit: cover;
+}
+
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .itembloccontentactions a[role=button] {
+  font-size: 1rem;
+}
+
+
+@media (max-width: 767px) {
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper {
+    gap: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {
+    width: 100%;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper:not(.is-card) .text-wrapper {
+    display: contents;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper.is-card .text-wrapper {
+    padding: 1.5rem;
+  }
+
+  #ct-00000000-0000-4000-8000-000000000004 .content-wrapper:not(.is-card) .text-wrapper .bloc-title {
+    order: -1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+#ct-00000000-0000-4000-8000-000000000004 .content-wrapper .picture-wrapper {
+  container-type: inline-size;
+}</style></div>
+
+<div class="ligne" id="ligne" aria-hidden="true"><span>Ligne de déclenchement</span></div>
+<aside class="pan" aria-label="Réglages">
+  <h2>Classes txim</h2>
+  <label for="placement">Classes posées sur</label>
+  <div class="l"><select id="placement"><option value="cw">.content-wrapper (champs du gabarit)</option><option value="ct">#ct-… (classe du bloc)</option></select></div>
+  <label for="image">Animation de l'image</label><div class="l"><button data-pas="image:-1">‹</button><select id="image"></select><button data-pas="image:1">›</button></div>
+  <label for="texte">Animation du texte</label><div class="l"><button data-pas="texte:-1">‹</button><select id="texte"></select><button data-pas="texte:1">›</button></div>
+  <label for="survol">Effet au survol</label><div class="l"><button data-pas="survol:-1">‹</button><select id="survol"></select><button data-pas="survol:1">›</button></div>
+  <p class="aide" id="descr"></p>
+  <label for="mode">Déclenchement</label><div class="l"><select id="mode"></select></div>
+  <label for="seuil">Hauteur de déclenchement</label><div class="l"><select id="seuil"></select></div>
+  <label for="force">Intensité</label><div class="l"><select id="force"></select></div>
+  <label for="vitesse">Vitesse</label><div class="l"><select id="vitesse"></select></div>
+  <button class="rejouer" id="rejouer" type="button">Rejouer (mode apparition)</button>
+  <label>Classes à ajouter</label><code id="sortie"></code>
+  <div class="alerte" id="alerte"></div>
+</aside>
+
+<script>
+/*! txim v0.1.0 | JS optionnel : mode apparition, repli Firefox, survols Inclinaison et Projecteur | https://github.com/tcarudel/inwink-txim */
+/* txim : JS optionnel.
+   - Mode « joué à l'apparition » (classe txim-apparition) : pose data-txim-arme puis data-txim-vu.
+   - Navigateurs sans animation-timeline (Firefox) : bascule aussi les blocs « défilement » en apparition.
+   - Survols Inclinaison et Projecteur : pose --txim-px / --txim-py / --txim-src.
+   Ne modifie jamais className ni la structure : uniquement des attributs data-* et des variables CSS.
+   Surveille le DOM (inwink est une application React : les blocs arrivent sans rechargement). */
+(function () {
+  "use strict";
+  if (window.TXIM) return;
+  var CW = ".content-wrapper";
+  var ENTREE = '[class*="txim-i-"],[class*="txim-t-"]';
+  var POINTEUR = ".txim-h-inclinaison,.txim-h-projecteur";
+  var supporte = !!(window.CSS && CSS.supports && CSS.supports("animation-timeline", "view()"));
+  var armes = new Map(), suivis = new Map(), ios = {};
+
+  function blocs(sel) {                      // .content-wrapper concernés, classe posée sur #ct ou sur le wrapper
+    var s = new Set();
+    document.querySelectorAll(sel).forEach(function (el) {
+      if (el.matches(CW)) s.add(el); else el.querySelectorAll(CW).forEach(function (c) { s.add(c); });
+    });
+    return s;
+  }
+  function seuil(cw) {
+    var v = parseFloat(getComputedStyle(cw).getPropertyValue("--txim-seuil"));
+    return isNaN(v) ? 25 : v;
+  }
+  function observateur(m) {                  // un IntersectionObserver par hauteur de déclenchement
+    return ios[m] || (ios[m] = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting || e.boundingClientRect.bottom <= 0) e.target.setAttribute("data-txim-vu", "");
+      });
+    }, { rootMargin: "0px 0px -" + m + "% 0px" }));
+  }
+  function rejouer(cw) {                     // remet à zéro (le bloc est ressorti par le bas)
+    cw.removeAttribute("data-txim-vu");
+    cw.setAttribute("data-txim-reset", "");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { cw.removeAttribute("data-txim-reset"); }); });
+  }
+  var sortie = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting && e.boundingClientRect.top > 0 && e.target.hasAttribute("data-txim-vu")) rejouer(e.target);
+    });
+  });
+  function armer(cw) {
+    var m = seuil(cw), a = armes.get(cw);
+    if (a && a.m === m) return;
+    if (a) a.io.unobserve(cw); else sortie.observe(cw);
+    cw.setAttribute("data-txim-arme", "");
+    var io = observateur(m); io.observe(cw);
+    armes.set(cw, { io: io, m: m });
+  }
+  function desarmer(cw) {
+    var a = armes.get(cw);
+    a.io.unobserve(cw); sortie.unobserve(cw);
+    ["data-txim-arme", "data-txim-vu", "data-txim-reset"].forEach(function (n) { cw.removeAttribute(n); });
+    armes.delete(cw);
+  }
+  function suivre(cw) {
+    var box = cw.querySelector(".picture-wrapper");
+    if (!box) return;
+    var img = box.querySelector("img");
+    function src() { if (img) box.style.setProperty("--txim-src", 'url("' + (img.currentSrc || img.src).replace(/"/g, "%22") + '")'); }
+    function bouge(e) {
+      var r = box.getBoundingClientRect();
+      box.style.setProperty("--txim-px", ((e.clientX - r.left) / r.width).toFixed(3));
+      box.style.setProperty("--txim-py", ((e.clientY - r.top) / r.height).toFixed(3));
+    }
+    function quitte() { box.style.setProperty("--txim-px", ".5"); box.style.setProperty("--txim-py", ".5"); }
+    src();
+    if (img) img.addEventListener("load", src);
+    cw.addEventListener("pointermove", bouge);
+    cw.addEventListener("pointerleave", quitte);
+    cw.setAttribute("data-txim-pointeur", "");
+    suivis.set(cw, function () {
+      if (img) img.removeEventListener("load", src);
+      cw.removeEventListener("pointermove", bouge);
+      cw.removeEventListener("pointerleave", quitte);
+      cw.removeAttribute("data-txim-pointeur");
+      ["--txim-src", "--txim-px", "--txim-py"].forEach(function (p) { box.style.removeProperty(p); });
+    });
+  }
+  function scan() {
+    var a = blocs(".txim-apparition");
+    if (!supporte) blocs(ENTREE).forEach(function (c) { a.add(c); });
+    armes.forEach(function (_, cw) { if (!a.has(cw) || !cw.isConnected) desarmer(cw); });
+    a.forEach(armer);
+    var p = blocs(POINTEUR);
+    suivis.forEach(function (stop, cw) { if (!p.has(cw) || !cw.isConnected) { stop(); suivis.delete(cw); } });
+    p.forEach(function (cw) { if (!suivis.has(cw)) suivre(cw); });
+  }
+  var prevu = 0;
+  function planifier() { if (!prevu) prevu = requestAnimationFrame(function () { prevu = 0; scan(); }); }
+  new MutationObserver(planifier).observe(document.documentElement,
+    { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", scan); else scan();
+
+  window.TXIM = {
+    version: "0.1.0",
+    scan: scan,
+    rejouer: function () {                   // relance les blocs en mode apparition (utile pour tester)
+      armes.forEach(function (a, cw) { rejouer(cw); a.io.unobserve(cw); a.io.observe(cw); });
+    }
+  };
+})();
+</script>
+<script>
+(function () {
+  var CAT = {"image": [["fondu", "Fondu montant", "L'image monte en apparaissant.", false], ["rideau", "Rideau", "L'image se dévoile depuis son bord extérieur en se dézoomant.", false], ["parallaxe", "Parallaxe", "L'image défile dans son cadre (toujours liée au défilement).", false], ["convergence", "Convergence", "L'image arrive de son bord extérieur en se redressant.", false], ["cercle", "Ouverture circulaire", "L'image s'ouvre en cercle depuis son centre.", false], ["volets", "Volets", "L'image se dévoile par bandes horizontales.", false], ["eclosion", "Éclosion", "L'image part d'une pastille ronde et s'agrandit.", false], ["portes", "Portes", "Deux panneaux de couleur d'accent s'écartent.", false], ["balayage", "Balayage", "Un aplat couvre le cadre puis se retire ; le texte attend.", false], ["diagonale", "Diagonale", "L'image se dévoile en diagonale depuis le coin extérieur.", false], ["pivot", "Pivot", "L'image arrive en tournant et en grossissant.", false], ["depliage", "Dépliage", "L'image se déplie en 3D depuis son bord.", false], ["atterrissage", "Atterrissage", "L'image arrive en grand par-dessus le texte puis se pose.", false], ["couleur", "Noir et blanc vers couleur", "L'image passe du noir et blanc à la couleur.", false], ["flou", "Mise au point (bloc entier)", "Le bloc passe du flou au net.", false], ["bascule", "Bascule 3D (bloc entier)", "Le bloc arrive incliné et se redresse.", false]], "texte": [["monte", "Montée", "Les éléments montent l'un après l'autre.", false], ["glisse", "Glissement latéral", "Les éléments glissent depuis le bord opposé à l'image.", false], ["fondu", "Fondu", "Fondu simple, élément par élément.", false], ["emergence", "Émergence", "Chaque élément sort d'une fente invisible.", false], ["focale", "Focale", "Le titre arrive agrandi et flou puis se pose net.", false], ["surligneur", "Surligneur", "Un trait de surligneur passe sous le titre.", false], ["encre", "Encre", "Titre et description se remplissent ligne par ligne.", false], ["zigzag", "Zigzag", "Les éléments arrivent alternativement de gauche et de droite.", false], ["parallaxe", "Parallaxe", "Le texte se décale pendant la traversée de l'écran.", false]], "survol": [["zoom", "Zoom et soulignement", "L'image se rapproche, le titre se souligne.", false], ["duotone", "Duotone", "La teinte d'accent glisse et révèle la couleur.", false], ["aplat", "Aplat décalé", "L'image vient se poser sur un aplat décalé.", false], ["inclinaison", "Inclinaison (JS)", "L'image s'incline vers le pointeur.", true], ["projecteur", "Projecteur (JS)", "Un halo suit le pointeur et révèle la couleur.", true], ["superposition", "Superposition", "Le texte glisse par-dessus l'image.", false]], "conflits": [[["i-balayage", "i-portes"], ["h-duotone", "h-inclinaison", "h-projecteur"], "même pseudo-élément ::after"], [["i-couleur"], ["h-duotone", "h-projecteur"], "même propriété filter sur l'image"]]};
+  var LISTES = {
+    image: [["", "Aucune"]].concat(CAT.image.map(function (e) { return ["txim-i-" + e[0], e[1]]; })),
+    texte: [["", "Aucune"]].concat(CAT.texte.map(function (e) { return ["txim-t-" + e[0], e[1]]; })),
+    survol: [["", "Aucun"]].concat(CAT.survol.map(function (e) { return ["txim-h-" + e[0], e[1]]; })),
+    mode: [["", "Lié au défilement (CSS pur)"], ["txim-apparition", "Joué à l'apparition (JS)"]],
+    seuil: [["txim-seuil-10", "10 %"], ["txim-seuil-20", "20 %"], ["", "25 % (défaut)"], ["txim-seuil-30", "30 %"], ["txim-seuil-40", "40 %"], ["txim-seuil-50", "50 %"]],
+    force: [["txim-force-05", "×0,5"], ["txim-force-075", "×0,75"], ["", "×1 (défaut)"], ["txim-force-15", "×1,5"], ["txim-force-2", "×2"]],
+    vitesse: [["txim-vif", "Vive"], ["", "Normale (défaut)"], ["txim-pose", "Posée"]]
+  };
+  var DESCR = {};
+  ["image", "texte", "survol"].forEach(function (f) {
+    var l = { image: "i", texte: "t", survol: "h" }[f];
+    CAT[f].forEach(function (e) { DESCR["txim-" + l + "-" + e[0]] = e[2] + (e[3] ? " JS requis." : ""); });
+  });
+  var $ = function (id) { return document.getElementById(id); };
+  Object.keys(LISTES).forEach(function (k) {
+    $(k).innerHTML = LISTES[k].map(function (o) { return '<option value="' + o[0] + '">' + o[1] + "</option>"; }).join("");
+  });
+  $("image").value = "txim-i-rideau"; $("texte").value = "txim-t-monte"; $("seuil").value = ""; $("force").value = ""; $("vitesse").value = "";
+
+  function appliquer() {
+    var c = ["image", "texte", "survol", "mode", "seuil", "force", "vitesse"].map(function (k) { return $(k).value; }).filter(Boolean);
+    document.querySelectorAll(".bloc-teaser").forEach(function (ct) {
+      var cw = ct.querySelector(".content-wrapper");
+      [ct, cw].forEach(function (el) {
+        [].slice.call(el.classList).forEach(function (k) { if (k.indexOf("txim-") === 0) el.classList.remove(k); });
+      });
+      if (c.length) ($("placement").value === "ct" ? ct : cw).classList.add.apply(($("placement").value === "ct" ? ct : cw).classList, c);
+    });
+    $("sortie").textContent = c.join(" ") || "(aucune)";
+    $("descr").textContent = [$("image").value, $("texte").value, $("survol").value].map(function (k) { return DESCR[k]; }).filter(Boolean).join(" ");
+    var s = { "txim-seuil-10": 10, "txim-seuil-20": 20, "txim-seuil-30": 30, "txim-seuil-40": 40, "txim-seuil-50": 50 }[$("seuil").value] || 25;
+    $("ligne").style.bottom = s + "%";
+    var al = CAT.conflits.filter(function (x) {
+      return x[0].indexOf($("image").value.replace("txim-", "")) >= 0 && x[1].indexOf($("survol").value.replace("txim-", "")) >= 0;
+    });
+    $("alerte").style.display = al.length ? "block" : "none";
+    $("alerte").textContent = al.length ? "Combinaison déconseillée : " + al[0][2] + "." : "";
+    $("rejouer").disabled = $("mode").value !== "txim-apparition";
+  }
+  document.querySelectorAll(".pan select").forEach(function (s) { s.addEventListener("change", appliquer); });
+  document.querySelectorAll("[data-pas]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-pas").split(":"), s = $(p[0]), n = s.options.length;
+      s.selectedIndex = (s.selectedIndex + +p[1] + n) % n; appliquer();
+    });
+  });
+  $("rejouer").addEventListener("click", function () { if (window.TXIM) TXIM.rejouer(); });
+  appliquer();
+})();
+</script>
+</body>
+</html>

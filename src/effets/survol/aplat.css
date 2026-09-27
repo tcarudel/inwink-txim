@@ -1,0 +1,5 @@
+/* Survol : un aplat de couleur décalé derrière l'image ; l'image vient s'y poser */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .txim-h-aplat .picture-wrapper{box-shadow:calc(20px * §D) 20px 0 §A;transition:translate .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s cubic-bezier(.2,.7,.2,1)}
+  §HV(txim-h-aplat):is(:hover,:focus-within) .picture-wrapper{translate:calc(10px * §D) 10px;box-shadow:calc(10px * §D) 10px 0 §A}
+}

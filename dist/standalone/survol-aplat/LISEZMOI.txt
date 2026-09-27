@@ -1,0 +1,5 @@
+Effet survol « Aplat décalé » : classe txim-h-aplat sur le bloc (#ct-…) ou sur .content-wrapper.
+L'image vient se poser sur un aplat décalé.
+
+CSS : txim-survol-aplat.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

@@ -1,0 +1,1695 @@
+{
+	"id": "b8c30300-b877-4d1a-8940-7d462095f53a",
+	"type": "teaser",
+	"customCSS": "/* OPTIONS */\n/* Background image opacity */\n##contentid .content-wrapper.image-light .picture-wrapper:before {\n  background-color: rgba(255, 255, 255, 0.3);\n}\n\n##contentid .content-wrapper.image-dark .picture-wrapper:before {\n  background-color: rgba(0, 0, 0, 0.3);\n}\n\n/* Image position to the left */\n##contentid .content-wrapper.image-left {\n  flex-flow: row wrap;\n}\n\n##contentid .content-wrapper.image-left .text-wrapper:not(.card) {\n  padding-left: 40px;\n}\n\n/* Image position to the right */\n##contentid .content-wrapper.image-right {\n  flex-flow: row-reverse wrap;\n}\n\n##contentid .content-wrapper.image-right .text-wrapper {\n  padding-right: 40px;\n}\n\n/* Text position to the center */\n##contentid .content-wrapper.text-center .text-wrapper {\n  align-items: center;\n  text-align: center;\n}\n\n##contentid .content-wrapper.text-center .itembloccontentactions {\n  justify-content: center;\n}\n\n/* Text position to the right */\n##contentid .content-wrapper.text-right .text-wrapper {\n  align-items: flex-end;\n  text-align: right;\n}\n\n##contentid .content-wrapper.text-right .itembloccontentactions {\n  justify-content: flex-end;\n}\n\n/* Half text proportion */\n##contentid .content-wrapper.half :is(.text-wrapper, .picture-wrapper) {\n  width: 50%;\n}\n\n/* Large text proportion */\n##contentid .content-wrapper.large .text-wrapper {\n  width: 65%;\n}\n\n##contentid .content-wrapper.large .picture-wrapper {\n  width: 35%;\n}\n\n/* Small text proportion */\n##contentid .content-wrapper.small .text-wrapper {\n  width: 35%;\n}\n\n##contentid .content-wrapper.small .picture-wrapper {\n  width: 65%;\n}\n\n/* LAYOUT */\n##contentid .content-wrapper {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n##contentid .content-wrapper .text-wrapper > * {\n  margin: 0;\n}\n\n/* Image */\n##contentid .content-wrapper .picture-wrapper {\n  display: flex;\n  position: relative;\n}\n\n##contentid .content-wrapper:is(.image-dark, .image-light) .picture-wrapper:before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  z-index: 1;\n}\n\n##contentid .content-wrapper .picture {\n  object-fit: contain;\n  width: 100%;\n}\n\n/* Content */\n##contentid .content-wrapper .text-wrapper {\n  display: flex;\n  flex-flow: column nowrap;\n  justify-content: center;\n  gap: 2rem;\n}\n\n/* Buttons */\n##contentid .content-wrapper .itembloccontentactions {\n  display: flex;\n  flex-flow: row wrap;\n  gap: 1rem;\n  width: 100%;\n}\n\n##contentid .content-wrapper .itembloccontentactions a[role=button] {\n  margin: 0;\n  min-width: 160px;\n  text-align: center;\n}\n\n/* CARD LAYOUT */\n##contentid .content-wrapper.is-card {\n  justify-content: space-between;\n  align-items: stretch;\n}\n\n/* Card half text proportion */\n##contentid .content-wrapper.is-card.half :is(.text-wrapper.card, .picture-wrapper) {\n  width: 48%;\n}\n\n/* Card large text proportion */\n##contentid .content-wrapper.is-card.large .text-wrapper {\n  width: 63%;\n}\n\n##contentid .content-wrapper.is-card.large .picture-wrapper {\n  width: 33%;\n}\n\n/* Card small text proportion */\n##contentid .content-wrapper.is-card.small .text-wrapper {\n  width: 33%;\n}\n\n##contentid .content-wrapper.is-card.small .picture-wrapper {\n  width: 63%;\n}\n\n/* Card content */\n##contentid .content-wrapper.is-card .text-wrapper {\n  padding: 2.5rem;\n}\n\n##contentid .content-wrapper.is-card .picture {\n  object-fit: cover;\n}\n\n/* Card buttons */\n##contentid .content-wrapper .itembloccontentactions a[role=button] {\n  font-size: 1rem;\n}\n\n/* Responsive */\n@media (max-width: 767px) {\n  ##contentid .content-wrapper {\n    gap: 1.5rem;\n  }\n\n  ##contentid .content-wrapper:is(.half, .large, .small, .is-card.half) :is(.text-wrapper.card, .picture-wrapper) {\n    width: 100%;\n  }\n\n  ##contentid .content-wrapper:not(.is-card) .text-wrapper {\n    display: contents;\n  }\n\n  ##contentid .content-wrapper.is-card .text-wrapper {\n    padding: 1.5rem;\n  }\n\n  ##contentid .content-wrapper:not(.is-card) .text-wrapper .bloc-title {\n    order: -1;\n    text-align: center;\n    width: 100%;\n  }\n}\n\n##contentid .content-wrapper .picture-wrapper {\n  container-type: inline-size;\n}",
+	"editor": {
+		"header": {
+			"disable": true
+		}
+	},
+	"properties": {
+		"hideActions": true,
+		"noHeader": true,
+		"template": {
+			"type": "div",
+			"className": "content-wrapper",
+			"conditionalClasses": {
+				"image-left": [
+					{
+						"name": "image-position",
+						"op": "eq",
+						"val": "left"
+					}
+				],
+				"image-right": [
+					{
+						"name": "image-position",
+						"op": "eq",
+						"val": "right"
+					}
+				],
+				"text-left": [
+					{
+						"name": "text-position",
+						"op": "eq",
+						"val": "left"
+					}
+				],
+				"text-center": [
+					{
+						"name": "text-position",
+						"op": "eq",
+						"val": "center"
+					}
+				],
+				"text-right": [
+					{
+						"name": "text-position",
+						"op": "eq",
+						"val": "right"
+					}
+				],
+				"half": [
+					{
+						"name": "text-proportion",
+						"op": "eq",
+						"val": "half"
+					}
+				],
+				"large": [
+					{
+						"name": "text-proportion",
+						"op": "eq",
+						"val": "large"
+					}
+				],
+				"small": [
+					{
+						"name": "text-proportion",
+						"op": "eq",
+						"val": "small"
+					}
+				],
+				"image-dark": [
+					{
+						"name": "image-opacity",
+						"op": "eq",
+						"val": "dark"
+					}
+				],
+				"image-light": [
+					{
+						"name": "image-opacity",
+						"op": "eq",
+						"val": "light"
+					}
+				],
+				"is-card": [
+					{
+						"name": "card",
+						"op": "eq",
+						"val": true
+					}
+				],
+				"txim-i-fondu": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "fondu"
+					}
+				],
+				"txim-i-rideau": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "rideau"
+					}
+				],
+				"txim-i-parallaxe": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "parallaxe"
+					}
+				],
+				"txim-i-convergence": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "convergence"
+					}
+				],
+				"txim-i-cercle": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "cercle"
+					}
+				],
+				"txim-i-volets": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "volets"
+					}
+				],
+				"txim-i-eclosion": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "eclosion"
+					}
+				],
+				"txim-i-portes": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "portes"
+					}
+				],
+				"txim-i-balayage": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "balayage"
+					}
+				],
+				"txim-i-diagonale": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "diagonale"
+					}
+				],
+				"txim-i-pivot": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "pivot"
+					}
+				],
+				"txim-i-depliage": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "depliage"
+					}
+				],
+				"txim-i-atterrissage": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "atterrissage"
+					}
+				],
+				"txim-i-couleur": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "couleur"
+					}
+				],
+				"txim-i-flou": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "flou"
+					}
+				],
+				"txim-i-bascule": [
+					{
+						"name": "txim-image",
+						"op": "eq",
+						"val": "bascule"
+					}
+				],
+				"txim-t-monte": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "monte"
+					}
+				],
+				"txim-t-glisse": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "glisse"
+					}
+				],
+				"txim-t-fondu": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "fondu"
+					}
+				],
+				"txim-t-emergence": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "emergence"
+					}
+				],
+				"txim-t-focale": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "focale"
+					}
+				],
+				"txim-t-surligneur": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "surligneur"
+					}
+				],
+				"txim-t-encre": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "encre"
+					}
+				],
+				"txim-t-zigzag": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "zigzag"
+					}
+				],
+				"txim-t-parallaxe": [
+					{
+						"name": "txim-texte",
+						"op": "eq",
+						"val": "parallaxe"
+					}
+				],
+				"txim-h-zoom": [
+					{
+						"name": "txim-survol",
+						"op": "eq",
+						"val": "zoom"
+					}
+				],
+				"txim-h-duotone": [
+					{
+						"name": "txim-survol",
+						"op": "eq",
+						"val": "duotone"
+					}
+				],
+				"txim-h-aplat": [
+					{
+						"name": "txim-survol",
+						"op": "eq",
+						"val": "aplat"
+					}
+				],
+				"txim-h-inclinaison": [
+					{
+						"name": "txim-survol",
+						"op": "eq",
+						"val": "inclinaison"
+					}
+				],
+				"txim-h-projecteur": [
+					{
+						"name": "txim-survol",
+						"op": "eq",
+						"val": "projecteur"
+					}
+				],
+				"txim-h-superposition": [
+					{
+						"name": "txim-survol",
+						"op": "eq",
+						"val": "superposition"
+					}
+				],
+				"txim-apparition": [
+					{
+						"name": "txim-mode",
+						"op": "eq",
+						"val": "apparition"
+					}
+				],
+				"txim-seuil-10": [
+					{
+						"name": "txim-hauteur",
+						"op": "eq",
+						"val": "10"
+					}
+				],
+				"txim-seuil-20": [
+					{
+						"name": "txim-hauteur",
+						"op": "eq",
+						"val": "20"
+					}
+				],
+				"txim-seuil-30": [
+					{
+						"name": "txim-hauteur",
+						"op": "eq",
+						"val": "30"
+					}
+				],
+				"txim-seuil-40": [
+					{
+						"name": "txim-hauteur",
+						"op": "eq",
+						"val": "40"
+					}
+				],
+				"txim-seuil-50": [
+					{
+						"name": "txim-hauteur",
+						"op": "eq",
+						"val": "50"
+					}
+				],
+				"txim-force-05": [
+					{
+						"name": "txim-intensite",
+						"op": "eq",
+						"val": "05"
+					}
+				],
+				"txim-force-075": [
+					{
+						"name": "txim-intensite",
+						"op": "eq",
+						"val": "075"
+					}
+				],
+				"txim-force-15": [
+					{
+						"name": "txim-intensite",
+						"op": "eq",
+						"val": "15"
+					}
+				],
+				"txim-force-2": [
+					{
+						"name": "txim-intensite",
+						"op": "eq",
+						"val": "2"
+					}
+				],
+				"txim-vif": [
+					{
+						"name": "txim-vitesse",
+						"op": "eq",
+						"val": "vif"
+					}
+				],
+				"txim-pose": [
+					{
+						"name": "txim-vitesse",
+						"op": "eq",
+						"val": "pose"
+					}
+				]
+			},
+			"blocs": [
+				{
+					"type": "div",
+					"className": "picture-wrapper",
+					"blocs": [
+						{
+							"type": "inwinkimage",
+							"className": "picture",
+							"showIf": [
+								{
+									"not": {
+										"or": [
+											{
+												"name": "picture",
+												"op": "isempty"
+											},
+											{
+												"name": "picture",
+												"op": "eq",
+												"val": ""
+											},
+											{
+												"name": "picture",
+												"op": "eq",
+												"val": null
+											}
+										]
+									}
+								}
+							],
+							"properties": {
+								"lazy": true,
+								"target": "picture",
+								"alt": [
+									"title"
+								],
+								"sizes": "(max-width: 767px) 100cqw, min(100cqw, 640px)",
+								"availableSizes": [
+									400,
+									700,
+									1200
+								],
+								"defaultSize": 700
+							},
+							"bindings": [
+								{
+									"fields": [
+										{
+											"name": "alttextseo"
+										}
+									],
+									"target": "alt"
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "div",
+					"className": "text-wrapper",
+					"conditionalClasses": {
+						"card": [
+							{
+								"name": "card",
+								"op": "eq",
+								"val": true
+							}
+						]
+					},
+					"blocs": [
+						{
+							"type": "h2",
+							"className": "bloc-title",
+							"showIf": [
+								{
+									"not": {
+										"and": [
+											{
+												"or": [
+													{
+														"name": "pretitle",
+														"op": "isempty"
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": null
+													}
+												]
+											},
+											{
+												"or": [
+													{
+														"name": "title",
+														"op": "isempty"
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": null
+													}
+												]
+											}
+										]
+									}
+								}
+							],
+							"blocs": [
+								{
+									"type": "span",
+									"className": "pretitle bloc-accent",
+									"showIf": [
+										{
+											"not": {
+												"or": [
+													{
+														"name": "pretitle",
+														"op": "isempty"
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "pretitle",
+														"op": "eq",
+														"val": null
+													}
+												]
+											}
+										}
+									],
+									"fields": [
+										{
+											"name": "pretitle"
+										}
+									]
+								},
+								{
+									"type": "span",
+									"className": "bloctitle",
+									"showIf": [
+										{
+											"not": {
+												"or": [
+													{
+														"name": "title",
+														"op": "isempty"
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": ""
+													},
+													{
+														"name": "title",
+														"op": "eq",
+														"val": null
+													}
+												]
+											}
+										}
+									],
+									"fields": [
+										{
+											"name": "title"
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "div",
+							"className": "description",
+							"showIf": [
+								{
+									"not": {
+										"or": [
+											{
+												"name": "description",
+												"op": "isempty"
+											},
+											{
+												"name": "description",
+												"op": "eq",
+												"val": ""
+											},
+											{
+												"name": "description",
+												"op": "eq",
+												"val": null
+											}
+										]
+									}
+								}
+							],
+							"fields": [
+								{
+									"name": "description"
+								}
+							]
+						},
+						{
+							"type": "bloccontentactions"
+						}
+					]
+				}
+			]
+		},
+		"itemDefinition": {
+			"languages": [
+				"fr",
+				"en"
+			],
+			"fields": [
+				{
+					"key": "picture",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "picture",
+					"labels": {
+						"fr": "Image",
+						"en": "Picture",
+						"es": "Imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "alttextseo",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "text",
+					"labels": {
+						"fr": "Texte alternatif (SEO)",
+						"en": "Alternative text (SEO)",
+						"es": "Texto alternativo (SEO)"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "pretitle",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": true,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "text",
+					"labels": {
+						"fr": "Pré-titre",
+						"en": "Pretitle",
+						"es": "Pretítulo"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "title",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": true,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "text",
+					"labels": {
+						"fr": "Titre",
+						"en": "Title",
+						"es": "Título"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "description",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": true,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "multilinetext",
+					"labels": {
+						"fr": "Description",
+						"en": "Description",
+						"es": "Descripción"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "card",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "bool",
+					"labels": {
+						"fr": "Affichage de la carte",
+						"en": "Card display",
+						"es": "Visualización de tarjeta"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": null,
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "image-opacity",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Opacité de l'image",
+						"en": "Image opacity",
+						"es": "Opacidad de la imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "light",
+							"labels": {
+								"fr": "Clair",
+								"en": "Light",
+								"es": "Claro"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "dark",
+							"labels": {
+								"fr": "Sombre",
+								"en": "Dark",
+								"es": "Oscuro"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "normal",
+							"labels": {
+								"fr": "Aucune",
+								"en": "None",
+								"es": "Ninguna"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "image-position",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Position de l'image",
+						"en": "Image position",
+						"es": "Posición de la imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "right",
+							"labels": {
+								"fr": "Droite",
+								"en": "Right",
+								"es": "Derecha"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "left",
+							"labels": {
+								"fr": "Gauche",
+								"en": "Left",
+								"es": "Izquierda"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "text-position",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Position du texte",
+						"en": "Text position",
+						"es": "Posición del texto"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "right",
+							"labels": {
+								"fr": "Droite",
+								"en": "Right",
+								"es": "Derecha"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "left",
+							"labels": {
+								"fr": "Gauche",
+								"en": "Left",
+								"es": "Izquierda"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "center",
+							"labels": {
+								"fr": "Centre",
+								"en": "Center",
+								"es": "Centro"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "text-proportion",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Proportion du texte",
+						"en": "Text proportion",
+						"es": "Proporción del texto"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "half",
+							"labels": {
+								"fr": "Moitié",
+								"en": "Half",
+								"es": "Mitad"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "large",
+							"labels": {
+								"fr": "Large",
+								"en": "Large",
+								"es": "Grande"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "small",
+							"labels": {
+								"fr": "Petit",
+								"en": "Small",
+								"es": "Pequeño"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-image",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Animation de l'image",
+						"en": "Image animation",
+						"es": "Animación de la imagen"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "fondu",
+							"labels": {
+								"fr": "Fondu montant",
+								"en": "Fade up",
+								"es": "Fundido ascendente"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "rideau",
+							"labels": {
+								"fr": "Rideau",
+								"en": "Curtain",
+								"es": "Cortina"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "parallaxe",
+							"labels": {
+								"fr": "Parallaxe",
+								"en": "Parallax",
+								"es": "Paralaje"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "convergence",
+							"labels": {
+								"fr": "Convergence",
+								"en": "Converge",
+								"es": "Convergencia"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "cercle",
+							"labels": {
+								"fr": "Ouverture circulaire",
+								"en": "Circle reveal",
+								"es": "Apertura circular"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "volets",
+							"labels": {
+								"fr": "Volets",
+								"en": "Blinds",
+								"es": "Persianas"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "eclosion",
+							"labels": {
+								"fr": "Éclosion",
+								"en": "Bloom",
+								"es": "Eclosión"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "portes",
+							"labels": {
+								"fr": "Portes",
+								"en": "Doors",
+								"es": "Puertas"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "balayage",
+							"labels": {
+								"fr": "Balayage",
+								"en": "Wipe",
+								"es": "Barrido"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "diagonale",
+							"labels": {
+								"fr": "Diagonale",
+								"en": "Diagonal",
+								"es": "Diagonal"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "pivot",
+							"labels": {
+								"fr": "Pivot",
+								"en": "Pivot",
+								"es": "Giro"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "depliage",
+							"labels": {
+								"fr": "Dépliage",
+								"en": "Unfold",
+								"es": "Despliegue"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "atterrissage",
+							"labels": {
+								"fr": "Atterrissage",
+								"en": "Landing",
+								"es": "Aterrizaje"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "couleur",
+							"labels": {
+								"fr": "Noir et blanc vers couleur",
+								"en": "Black & white to color",
+								"es": "Blanco y negro a color"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "flou",
+							"labels": {
+								"fr": "Mise au point (bloc entier)",
+								"en": "Focus (whole block)",
+								"es": "Enfoque (bloque entero)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "bascule",
+							"labels": {
+								"fr": "Bascule 3D (bloc entier)",
+								"en": "3D tilt-up (whole block)",
+								"es": "Basculación 3D (bloque entero)"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-texte",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Animation du texte",
+						"en": "Text animation",
+						"es": "Animación del texto"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "monte",
+							"labels": {
+								"fr": "Montée",
+								"en": "Rise",
+								"es": "Subida"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "glisse",
+							"labels": {
+								"fr": "Glissement latéral",
+								"en": "Side slide",
+								"es": "Deslizamiento lateral"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "fondu",
+							"labels": {
+								"fr": "Fondu",
+								"en": "Fade",
+								"es": "Fundido"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "emergence",
+							"labels": {
+								"fr": "Émergence",
+								"en": "Emerge",
+								"es": "Emergencia"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "focale",
+							"labels": {
+								"fr": "Focale",
+								"en": "Focus title",
+								"es": "Focal"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "surligneur",
+							"labels": {
+								"fr": "Surligneur",
+								"en": "Highlighter",
+								"es": "Resaltador"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "encre",
+							"labels": {
+								"fr": "Encre",
+								"en": "Ink fill",
+								"es": "Tinta"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "zigzag",
+							"labels": {
+								"fr": "Zigzag",
+								"en": "Zigzag",
+								"es": "Zigzag"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "parallaxe",
+							"labels": {
+								"fr": "Parallaxe",
+								"en": "Parallax",
+								"es": "Paralaje"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-survol",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Effet au survol",
+						"en": "Hover effect",
+						"es": "Efecto al pasar el ratón"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "zoom",
+							"labels": {
+								"fr": "Zoom et soulignement",
+								"en": "Zoom & underline",
+								"es": "Zoom y subrayado"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "duotone",
+							"labels": {
+								"fr": "Duotone",
+								"en": "Duotone",
+								"es": "Duotono"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "aplat",
+							"labels": {
+								"fr": "Aplat décalé",
+								"en": "Offset block",
+								"es": "Bloque desplazado"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "inclinaison",
+							"labels": {
+								"fr": "Inclinaison (JS)",
+								"en": "Tilt (JS)",
+								"es": "Inclinación (JS)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "projecteur",
+							"labels": {
+								"fr": "Projecteur (JS)",
+								"en": "Spotlight (JS)",
+								"es": "Foco (JS)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "superposition",
+							"labels": {
+								"fr": "Superposition",
+								"en": "Overlap",
+								"es": "Superposición"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-mode",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Déclenchement de l'animation",
+						"en": "Animation trigger",
+						"es": "Activación de la animación"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "defilement",
+							"labels": {
+								"fr": "Lié au défilement (défaut, sans JS)",
+								"en": "Linked to scroll (default, no JS)",
+								"es": "Vinculada al desplazamiento (sin JS)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "apparition",
+							"labels": {
+								"fr": "Joué à l'apparition (JS)",
+								"en": "Played on appearance (JS)",
+								"es": "Reproducida al aparecer (JS)"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-hauteur",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Hauteur de déclenchement",
+						"en": "Trigger height",
+						"es": "Altura de activación"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "10",
+							"labels": {
+								"fr": "10 % du bas de l'écran",
+								"en": "10% from bottom",
+								"es": "10 % desde abajo"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "20",
+							"labels": {
+								"fr": "20 %",
+								"en": "20%",
+								"es": "20 %"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "25",
+							"labels": {
+								"fr": "25 % (défaut)",
+								"en": "25% (default)",
+								"es": "25 % (por defecto)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "30",
+							"labels": {
+								"fr": "30 %",
+								"en": "30%",
+								"es": "30 %"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "40",
+							"labels": {
+								"fr": "40 %",
+								"en": "40%",
+								"es": "40 %"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "50",
+							"labels": {
+								"fr": "50 % (milieu)",
+								"en": "50% (middle)",
+								"es": "50 % (centro)"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-intensite",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Intensité",
+						"en": "Intensity",
+						"es": "Intensidad"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "05",
+							"labels": {
+								"fr": "Très légère",
+								"en": "Very light",
+								"es": "Muy ligera"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "075",
+							"labels": {
+								"fr": "Légère",
+								"en": "Light",
+								"es": "Ligera"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "1",
+							"labels": {
+								"fr": "Normale (défaut)",
+								"en": "Normal (default)",
+								"es": "Normal (por defecto)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "15",
+							"labels": {
+								"fr": "Forte",
+								"en": "Strong",
+								"es": "Fuerte"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "2",
+							"labels": {
+								"fr": "Très forte",
+								"en": "Very strong",
+								"es": "Muy fuerte"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				},
+				{
+					"key": "txim-vitesse",
+					"isMandatory": false,
+					"isMandatoryFor": null,
+					"applyTo": [],
+					"isLocalizable": false,
+					"isStatic": false,
+					"isLocked": false,
+					"type": "selectlist",
+					"labels": {
+						"fr": "Vitesse",
+						"en": "Speed",
+						"es": "Velocidad"
+					},
+					"placeholders": null,
+					"descriptions": null,
+					"remarks": null,
+					"tooltip": null,
+					"values": null,
+					"valuesList": [
+						{
+							"isSelectable": true,
+							"key": "vif",
+							"labels": {
+								"fr": "Vive",
+								"en": "Brisk",
+								"es": "Viva"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "normal",
+							"labels": {
+								"fr": "Normale (défaut)",
+								"en": "Normal (default)",
+								"es": "Normal (por defecto)"
+							},
+							"valuesList": null
+						},
+						{
+							"isSelectable": true,
+							"key": "pose",
+							"labels": {
+								"fr": "Posée",
+								"en": "Calm",
+								"es": "Pausada"
+							},
+							"valuesList": null
+						}
+					],
+					"value": null,
+					"validations": null,
+					"scope": []
+				}
+			],
+			"scopes": {
+				"picture": [],
+				"alttextseo": [],
+				"pretitle": [],
+				"title": [],
+				"description": [],
+				"card": [],
+				"image-opacity": [],
+				"image-position": [],
+				"text-position": [],
+				"text-proportion": [],
+				"txim-image": [],
+				"txim-texte": [],
+				"txim-survol": [],
+				"txim-mode": [],
+				"txim-hauteur": [],
+				"txim-intensite": [],
+				"txim-vitesse": []
+			}
+		},
+		"data": {
+			"picture": "https://cdn-assets.inwink.com/backoffice-public/assets/pictures/00-inwink/Background_Blue.jpg",
+			"alttextseo": "",
+			"pretitle": {
+				"fr": "Pré-titre",
+				"en": "Pretitle",
+				"es": "Pretítulo"
+			},
+			"title": {
+				"fr": "Titre du bloc",
+				"en": "Block title",
+				"es": "Título del bloque"
+			},
+			"description": {
+				"fr": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ut egestas lorem. Proin elementum dui ac egestas facilisis. Quisque posuere finibus mi vel dapibus. Sed dapibus, elit a tincidunt ullamcorper, tortor metus eleifend ipsum, vel dignissim nulla justo at lectus.",
+				"en": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ut egestas lorem. Proin elementum dui ac egestas facilisis. Quisque posuere finibus mi vel dapibus. Sed dapibus, elit a tincidunt ullamcorper, tortor metus eleifend ipsum, vel dignissim nulla justo at lectus.",
+				"es": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ut egestas lorem. Proin elementum dui ac egestas facilisis. Quisque posuere finibus mi vel dapibus. Sed dapibus, elit a tincidunt ullamcorper, tortor metus eleifend ipsum, vel dignissim nulla justo at lectus."
+			},
+			"card": false,
+			"image-opacity": "normal",
+			"image-position": "left",
+			"text-position": "left",
+			"text-proportion": "half",
+			"txim-image": "fondu",
+			"txim-texte": "monte",
+			"txim-survol": null,
+			"txim-mode": "defilement",
+			"txim-hauteur": "25",
+			"txim-intensite": "1",
+			"txim-vitesse": "normal"
+		},
+		"supportAssetFormat": true,
+		"assetsMigrationAi": 1
+	},
+	"layout": null,
+	"header": null,
+	"actions": [
+		{
+			"id": "a76df9ff-beff-4fbc-9d3c-af464ed24a3f",
+			"link": {
+				"url": ""
+			},
+			"label": {
+				"fr": "Cliquez ici",
+				"en": "Click here",
+				"es": "Haz clic aquí"
+			},
+			"icon": {
+				"className": ""
+			},
+			"description": {}
+		}
+	]
+}

@@ -1,0 +1,5 @@
+Effet texte « Parallaxe » : classe txim-t-parallaxe sur le bloc (#ct-…) ou sur .content-wrapper.
+Le texte se décale pendant la traversée de l'écran.
+
+CSS : txim-texte-parallaxe.css (noyau inclus).
+JS : txim.js uniquement pour le mode « joué à l'apparition » (classe txim-apparition).

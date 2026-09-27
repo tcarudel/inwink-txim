@@ -1,0 +1,133 @@
+/*! txim v0.1.0 | texte : Surligneur (autonome, noyau inclus) | https://github.com/tcarudel/inwink-txim */
+/* ==========================================================================
+   Noyau txim : options, moteur (défilement / apparition), accessibilité.
+   Les classes peuvent être posées sur le conteneur du bloc (#ct-…) ou sur
+   .content-wrapper (via conditionalClasses du gabarit).
+
+   Variables publiques, surchargeables par bloc (ex. #ct-xxx { --txim-seuil: 37%; }) :
+   --txim-seuil   hauteur de déclenchement, depuis le bas de l'écran   (25%)
+   --txim-force   intensité : amplitude des mouvements                  (1)
+   --txim-course  mode défilement : distance de scroll de l'animation   (1)
+   --txim-duree   mode apparition : multiplie durées et décalages       (1)
+   --txim-accent  couleur des aplats              (repli : --inwinkaccentcolor)
+   --txim-fond    fond du texte pour le survol Superposition            (#fff)
+   ========================================================================== */
+
+/* ---------- Options ---------- */
+.txim-seuil-10{--txim-seuil:10%}
+.txim-seuil-20{--txim-seuil:20%}
+.txim-seuil-30{--txim-seuil:30%}
+.txim-seuil-40{--txim-seuil:40%}
+.txim-seuil-50{--txim-seuil:50%}
+.txim-force-05{--txim-force:.5}
+.txim-force-075{--txim-force:.75}
+.txim-force-15{--txim-force:1.5}
+.txim-force-2{--txim-force:2}
+.txim-vif{--txim-course:.6;--txim-duree:.7}
+.txim-pose{--txim-course:1.6;--txim-duree:1.5}
+
+/* ---------- Repères lus dans le gabarit (aucun JS) ---------- */
+.content-wrapper.image-right{--txim-dir:-1}
+.content-wrapper.text-center{--txim-origine:50%}
+.content-wrapper.text-right{--txim-origine:100%}
+
+/* ---------- Mise en place ---------- */
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper{overflow:hidden}
+:is([class*="txim-t-"] .content-wrapper,.content-wrapper[class*="txim-t-"]) :is(.pretitle,.bloctitle){display:block}   /* les transformations ne s'appliquent pas aux span en ligne */
+@media (max-width:767px){:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]){overflow-x:clip}}   /* mobile : pas de barre de défilement horizontale pendant les glissements */
+
+/* Ordre d'apparition (--txim-dt : décalage imposé par certains effets d'image) */
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper{--i:0}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle{--i:calc(1 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle{--i:calc(2 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description{--i:calc(3 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{--i:calc(4 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>:nth-child(2){--i:calc(4.5 + var(--txim-dt,0))}
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>:nth-child(n+3){--i:calc(5 + var(--txim-dt,0))}
+
+/* ---------- Moteur 1 : lié au défilement (CSS pur, par défaut) ---------- */
+@supports (animation-timeline: view()){
+  :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]){view-timeline:--txim block;view-timeline-inset:0% var(--txim-seuil,25%)}
+  :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]),
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper::after,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .fieldtext,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description,
+:is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{
+    animation-timeline:--txim;animation-duration:auto;animation-delay:0s;
+    animation-timing-function:linear;animation-fill-mode:both;
+    animation-range-start:entry calc(var(--i,0) * 9% * var(--txim-course,1));
+    animation-range-end:entry calc((45% + var(--i,0) * 11%) * var(--txim-course,1))}
+}
+
+/* ---------- Moteur 2 : joué à l'apparition (le JS pose data-txim-arme puis data-txim-vu) ---------- */
+.content-wrapper[data-txim-arme],
+.content-wrapper[data-txim-arme] .picture-wrapper,
+.content-wrapper[data-txim-arme] .picture-wrapper::after,
+.content-wrapper[data-txim-arme] .picture,
+.content-wrapper[data-txim-arme] .pretitle,
+.content-wrapper[data-txim-arme] .bloctitle,
+.content-wrapper[data-txim-arme] .fieldtext,
+.content-wrapper[data-txim-arme] .description,
+.content-wrapper[data-txim-arme] .itembloccontentactions>*{
+  animation-timeline:auto;animation-range:normal;
+  animation-duration:calc(var(--dur,1s) * var(--txim-duree,1));
+  animation-delay:calc(var(--i,0) * 130ms * var(--txim-duree,1));
+  animation-timing-function:cubic-bezier(.2,.75,.2,1);animation-fill-mode:both;animation-play-state:paused}
+.content-wrapper[data-txim-arme][data-txim-vu],
+.content-wrapper[data-txim-arme][data-txim-vu] .picture-wrapper,
+.content-wrapper[data-txim-arme][data-txim-vu] .picture-wrapper::after,
+.content-wrapper[data-txim-arme][data-txim-vu] .picture,
+.content-wrapper[data-txim-arme][data-txim-vu] .pretitle,
+.content-wrapper[data-txim-arme][data-txim-vu] .bloctitle,
+.content-wrapper[data-txim-arme][data-txim-vu] .fieldtext,
+.content-wrapper[data-txim-arme][data-txim-vu] .description,
+.content-wrapper[data-txim-arme][data-txim-vu] .itembloccontentactions>*{animation-play-state:running}
+.content-wrapper[data-txim-reset],
+.content-wrapper[data-txim-reset] .picture-wrapper,
+.content-wrapper[data-txim-reset] .picture-wrapper::after,
+.content-wrapper[data-txim-reset] .picture,
+.content-wrapper[data-txim-reset] .pretitle,
+.content-wrapper[data-txim-reset] .bloctitle,
+.content-wrapper[data-txim-reset] .fieldtext,
+.content-wrapper[data-txim-reset] .description,
+.content-wrapper[data-txim-reset] .itembloccontentactions>*{animation-name:none!important}
+/* Sécurité : mode apparition sans JS (non chargé, en erreur) => contenu affiché, sans animation */
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]),
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture-wrapper,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture-wrapper::after,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .picture,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .pretitle,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .bloctitle,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .fieldtext,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .description,
+:is(.txim-apparition .content-wrapper,.content-wrapper.txim-apparition):not([data-txim-arme]) .itembloccontentactions>*{animation-name:none}
+
+/* ---------- Animations communes ---------- */
+@keyframes txim-monte{from{opacity:0;transform:translateY(calc(80px * var(--txim-force,1)))}}
+@keyframes txim-lateral{from{opacity:0;transform:translateX(calc(90px * var(--txim-force,1) * var(--txim-sens,1)))}}
+@keyframes txim-apparait{from{opacity:0}}
+@keyframes txim-dezoom{from{transform:scale(calc(1 + .5 * var(--txim-force,1)))}}
+
+/* ---------- Accessibilité ---------- */
+@media (prefers-reduced-motion: reduce){
+  html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]),
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture-wrapper::after,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .picture,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .pretitle,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .bloctitle,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .fieldtext,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .description,
+html :is([class*="txim-"] .content-wrapper,.content-wrapper[class*="txim-"]) .itembloccontentactions>*{animation:none!important;transition:none!important}
+}
+
+/* Texte : le texte monte, puis un trait de surligneur passe sous le titre */
+.txim-t-surligneur :is(.pretitle,.bloctitle,.description,.itembloccontentactions>*){animation-name:txim-monte}
+.txim-t-surligneur .bloctitle .fieldtext{--i:calc(3 + var(--txim-dt,0));
+  background:linear-gradient(color-mix(in srgb,var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)) 25%,transparent),color-mix(in srgb,var(--txim-accent,var(--inwinkaccentcolor,#2F4BE0)) 25%,transparent)) 0 88%/100% 42% no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;animation-name:txim-surligne}
+@keyframes txim-surligne{from{background-size:0% 42%}}
