@@ -1,0 +1,46 @@
+# Crée le tag vX.Y.Z et la release GitHub dès qu'un push sur main contient une nouvelle VERSION (build.py).
+# N'incrémente rien : la version est changée par la skill (étape « Livrer ») ou à la main.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lire VERSION dans build.py
+        id: v
+        run: |
+          V=$(python3 -c "import re; print(re.search(r'^VERSION\s*=\s*\"([^\"]+)\"', open('build.py', encoding='utf-8').read(), re.M).group(1))")
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$V" >/dev/null; then
+            echo "existe=oui" >> "$GITHUB_OUTPUT"
+            echo "Le tag v$V existe déjà : rien à faire."
+          else
+            echo "existe=non" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Notes de version (section du CHANGELOG.md)
+        if: steps.v.outputs.existe == 'non'
+        run: |
+          V="${{ steps.v.outputs.version }}"
+          awk -v t="## $V" '$0 == t {f=1; next} /^## / && f {exit} f' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "txim v$V" > notes.md
+          cat notes.md
+
+      - name: Créer le tag et la release
+        if: steps.v.outputs.existe == 'non'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="${{ steps.v.outputs.version }}"
+          gh release create "v$V" --title "txim v$V" --notes-file notes.md --target "$GITHUB_SHA"

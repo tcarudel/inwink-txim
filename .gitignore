@@ -1,4 +1,5 @@
-dist/demo/_sansjs.html
 __pycache__/
+dist/*.zip
 dist/screens/
 dist/gabarit/blocs/
+dist/demo/_sansjs.html

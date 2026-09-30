@@ -6,4 +6,5 @@
 - Options hauteur, intensité, vitesse.
 - Bloc inwink complet généré (gabarit de référence + options txim + contenu d'exemple, identifiants aléatoires).
 - Volets : masque en couches de dégradé, seule la variable est animée (progression continue).
+- Publication automatisée : GitHub Action qui crée le tag `vX.Y.Z` et la release quand `VERSION` change sur `main`.
 - Piste pour plus tard : fusion dans un bloc existant en conservant `data` et `actions`.

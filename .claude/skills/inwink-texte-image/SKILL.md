@@ -129,14 +129,29 @@ régression du noyau. Si Playwright manque : `pip install playwright && playwrig
 
 ## 7. Livrer
 
-- Incrémente `VERSION` dans `build.py` (mineure pour un nouvel effet, patch pour une correction), ajoute une entrée
-  à `CHANGELOG.md`, relance le build et le test.
-- **Claude Code** : propose un commit ; ne pousse et ne crée de tag que si l'utilisateur le demande.
-- **Chat** : livre un zip du dépôt mis à jour (sources + `dist/`), `dist/demo/demo-autonome.html` et
-  `dist/gabarit/bloc-texte-image-txim.json`.
+La publication est automatisée : `VERSION` (dans `build.py`) est la seule source du numéro, et la GitHub Action
+`.github/workflows/release.yml` crée le tag `vX.Y.Z` et la release (notes tirées de `CHANGELOG.md`) dès qu'un push
+sur `main` contient une nouvelle `VERSION`. Ton rôle s'arrête au commit local.
+
+```bash
+python3 <chemin-de-la-skill>/scripts/livrer.py . <mineure|patch|majeure> "Entrée de changelog" ["Autre entrée"] [--commit]
+```
+
+Le script incrémente `VERSION` (**mineure** pour un nouvel effet ou une nouvelle option, **patch** pour une
+correction, **majeure** seulement si des classes existantes changent de nom ou disparaissent : les blocs en
+production cesseraient de fonctionner), ajoute la section du changelog, relance le build et le test. Rédige des
+entrées de changelog courtes et orientées utilisateur (« Nouvel effet d'image : Lames (`txim-i-lames`) »).
+
+- **Claude Code** : montre le résumé des modifications (`git status`, diff utile), puis lance le script avec
+  `--commit`. **Ne pousse jamais** sans demande explicite (« push ») : c'est le push qui publie, via l'Action.
+- **Chat** : lance le script sans `--commit`, puis livre un zip du dépôt mis à jour (sources + `dist/`, sans
+  `dist/*.zip` ni `dist/screens/`), `dist/demo/demo-autonome.html` et `dist/gabarit/bloc-texte-image-txim.json`.
+  Rappelle la marche à suivre : remplacer le contenu du clone local **sauf `.git`** par celui du zip, puis
+  commit et « Push origin » dans GitHub Desktop ; l'Action fait le reste.
 
 Termine par un résumé court : classe(s) à utiliser et nom dans le panneau, famille, JS requis ou non, conflits,
-points d'attention.
+points d'attention, nouvelle version et URL jsDelivr
+(`https://cdn.jsdelivr.net/gh/tcarudel/inwink-txim@vX.Y.Z/dist/txim.css`, idem `txim.js`).
 
 ## Mission C : générer des blocs JSON
 
@@ -157,4 +172,5 @@ chargé sur le site (et `txim.js` pour le mode apparition ou les survols JS). Po
 - `references/architecture.md` : DOM du bloc, moteur (deux modes), variables, macros, cibles, pièges connus.
 - `assets/template-image.css`, `template-texte.css`, `template-survol.css` : modèles d'effet.
 - `assets/demo-legere.html` : modèle de démo légère (étape 2).
-- `scripts/smoke_test.py` : test automatique ; `scripts/nouveau_bloc.py` : blocs JSON avec identifiants neufs.
+- `scripts/smoke_test.py` : test automatique ; `scripts/nouveau_bloc.py` : blocs JSON avec identifiants neufs ;
+  `scripts/livrer.py` : version, changelog, build, test, commit local.

@@ -9,6 +9,7 @@
 6. Le JS
 7. Bloc JSON et gabarit de référence
 8. Pièges connus
+9. Versions et publication
 
 ## 1. DOM du bloc texte + image
 
@@ -127,3 +128,14 @@ les clés d'effet ; la règle `txim-i-<cle>` teste `txim-image == <cle>`.
 - Masques en bandes : une couche de dégradé par bande, légèrement chevauchantes au repos (12,6 % pour des pas de
   12,5 %), plutôt qu'un `repeating-linear-gradient` qui laisse des filets à la fin.
 - Images en `loading="lazy"` : ne pas les masquer avec `display: none` ; l'opacité et le clip-path conviennent.
+
+## 9. Versions et publication
+
+- `VERSION` dans `build.py` : seule source du numéro (en-têtes CSS/JS, zip, catalogue, `TXIM.version`).
+- `.github/workflows/release.yml` : à chaque push sur `main`, lit `VERSION` ; si le tag `vX.Y.Z` n'existe pas, crée
+  tag + release avec la section `## X.Y.Z` de `CHANGELOG.md`. Rien d'autre.
+- `dist/` est versionné (jsDelivr sert les fichiers du tag) ; `.gitignore` exclut `dist/*.zip`, `dist/screens/`,
+  `dist/gabarit/blocs/`. Les UUID du bloc JSON changent à chaque build : c'est normal dans un diff.
+- URL : `https://cdn.jsdelivr.net/gh/tcarudel/inwink-txim@vX.Y.Z/dist/txim.css` (et `txim.js`, `standalone/…`).
+- Majeure = rupture (classe renommée ou supprimée) : à éviter, les classes sont enregistrées dans les blocs en
+  production. Préférer ajouter une nouvelle classe et garder l'ancienne.
